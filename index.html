@@ -735,6 +735,14 @@ body.editing .slide[data-custom] .slide-ctrls{display:flex;gap:6px;position:abso
 .slide[data-custom]{outline:2px dashed rgba(213,178,0,0)}
 body.editing .slide[data-custom]{outline:2px dashed rgba(213,178,0,.5);outline-offset:-4px}
 
+/* insert zone (＋ 여기에 추가) between slides — edit mode only */
+.insert-zone{display:none}
+body.editing .insert-zone{display:flex;align-items:center;justify-content:center;width:min(96vw,1600px);margin:-12px 0;height:24px;opacity:.3;transition:opacity .15s;cursor:pointer}
+body.editing .insert-zone:hover{opacity:1}
+.insert-zone::before,.insert-zone::after{content:"";flex:1;height:2px;background:repeating-linear-gradient(90deg,rgba(213,178,0,.6) 0 9px,transparent 9px 18px)}
+.iz-btn{flex:0 0 auto;margin:0 12px;background:#d5b200;color:#1a1410;border:none;border-radius:99px;padding:6px 16px;font-size:12.5px;font-weight:800;letter-spacing:.02em;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.32);white-space:nowrap}
+.iz-btn:hover{background:#FFEC8D}
+
 /* AM mode: hard-lock standard slides */
 .lock-badge{display:none}
 body.am-mode.editing .slide:not([data-custom]) .lock-badge{display:flex;align-items:center;gap:7px;position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:45;background:rgba(0,0,0,.72);color:#bdb6ad;font-size:12px;font-weight:800;letter-spacing:.02em;padding:6px 14px;border-radius:99px;backdrop-filter:blur(8px);white-space:nowrap}
@@ -1265,21 +1273,23 @@ document.addEventListener('keydown',e=>{
     }
     if(editing) slide.querySelectorAll('[data-eid]').forEach(el=>el.setAttribute('contenteditable','true'));
   }
-  function addCustomSlide(tplId){
+  let pendingInsertBefore=null;   // target slide to insert before (null = before the closing slide)
+  function addCustomSlide(tplId, beforeEl){
     const tpl=document.getElementById(tplId); if(!tpl) return;
     const node=tpl.content.firstElementChild.cloneNode(true);
     node.dataset.scratch='1';
-    const slides=deck.querySelectorAll('.slide');
-    const last=slides[slides.length-1];
-    if(last) deck.insertBefore(node,last); else deck.appendChild(node);  // before the closing slide
+    let ref=beforeEl;
+    if(ref===undefined || ref===null){ const slides=deck.querySelectorAll('.slide'); ref=slides[slides.length-1]||null; } // default: before closing slide
+    if(ref) deck.insertBefore(node,ref); else deck.appendChild(node);
     enhanceCustomSlide(node);
-    rebuildHud();
+    rebuildHud(); refreshInsertZones();
     scheduleCustomSave();
     node.scrollIntoView({behavior:'smooth',block:'center'});
+    return node;
   }
   function deleteCustom(slide){
     if(!confirm('이 장표를 삭제할까요?')) return;
-    slide.remove(); rebuildHud(); scheduleCustomSave();
+    slide.remove(); rebuildHud(); refreshInsertZones(); scheduleCustomSave();
   }
   function moveCustom(slide,dir){
     const slides=[...deck.querySelectorAll('.slide')];
@@ -1287,8 +1297,23 @@ document.addEventListener('keydown',e=>{
     if(j<0||j>=slides.length) return;
     const ref=slides[j];
     deck.insertBefore(slide, dir<0?ref:ref.nextSibling);
-    rebuildHud(); scheduleCustomSave();
+    rebuildHud(); refreshInsertZones(); scheduleCustomSave();
     slide.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  // insert zones: "＋ 여기에 추가" affordance between slides (edit mode only)
+  function refreshInsertZones(){
+    deck.querySelectorAll('.insert-zone').forEach(z=>z.remove());
+    if(!editing) return;
+    const slides=[...deck.querySelectorAll('.slide')];
+    const mkZone=(beforeEl)=>{
+      const z=document.createElement('div'); z.className='insert-zone';
+      const btn=document.createElement('button'); btn.type='button'; btn.className='iz-btn'; btn.textContent='＋ 여기에 추가';
+      btn.addEventListener('click',ev=>{ ev.stopPropagation(); pendingInsertBefore=beforeEl; if(palette) palette.hidden=false; });
+      z.appendChild(btn);
+      return z;
+    };
+    slides.forEach(s=>deck.insertBefore(mkZone(s), s));   // a zone before each slide
+    deck.appendChild(mkZone(null));                        // and one at the very end
   }
   function cleanCustomClone(slide){
     const c=slide.cloneNode(true);
@@ -1339,6 +1364,7 @@ document.addEventListener('keydown',e=>{
       else el.removeAttribute('contenteditable');
     });
     if(on && palette) palette.hidden=true;
+    refreshInsertZones();
   }
   // finishing edit (수정완료) auto-downloads the deployable HTML; starting just turns it on
   function toggleEdit(){
@@ -1390,7 +1416,7 @@ document.addEventListener('keydown',e=>{
       deckClone.querySelectorAll('[data-eid]').forEach(e=>e.removeAttribute('data-eid'));
       deckClone.querySelectorAll('[data-ieid]').forEach(e=>e.removeAttribute('data-ieid'));
       deckClone.querySelectorAll('[data-scratch]').forEach(e=>e.removeAttribute('data-scratch'));
-      deckClone.querySelectorAll('.slide-ctrls,.lock-badge').forEach(e=>e.remove());
+      deckClone.querySelectorAll('.slide-ctrls,.lock-badge,.insert-zone').forEach(e=>e.remove());
       deckClone.querySelectorAll('.img-editable').forEach(e=>e.classList.remove('img-editable'));
       const deckHTML=deckClone.innerHTML;
       // 2) 암호화 (텍스트 + 교체 이미지 data URL까지 ciphertext 안으로)
@@ -1476,10 +1502,15 @@ document.addEventListener('keydown',e=>{
   /* ========== SLIDE BUILDER INIT (palette + lock badges + custom slides) ========== */
   const addBtn=document.getElementById('addBtn');
   const palette=document.getElementById('palette');
-  if(addBtn) addBtn.addEventListener('click',()=>{ if(editing && palette) palette.hidden=false; });
+  if(addBtn) addBtn.addEventListener('click',()=>{ if(editing && palette){ pendingInsertBefore=null; palette.hidden=false; } });
   if(palette){
     palette.querySelectorAll('.palette-item').forEach(b=>{
-      b.addEventListener('click',()=>{ palette.hidden=true; b.dataset.tpl.split(',').forEach(t=>addCustomSlide(t.trim())); });
+      b.addEventListener('click',()=>{
+        palette.hidden=true;
+        const ref=pendingInsertBefore;          // freeze target (multi-insert keeps order before same ref)
+        b.dataset.tpl.split(',').forEach(t=>addCustomSlide(t.trim(), ref));
+        pendingInsertBefore=null;
+      });
     });
     const pc=document.getElementById('paletteCancel'); if(pc) pc.addEventListener('click',()=>palette.hidden=true);
     palette.addEventListener('click',e=>{ if(e.target===palette) palette.hidden=true; });
