@@ -1,7 +1,7 @@
 # 2026 아이치-나고야 아시안게임 세일즈덱 · 작업 내역
 
 > 이 문서는 Claude와의 대화로 진행된 모든 주요 변경/결정 사항을 정리한 워크로그입니다.
-> 마지막 업데이트: 2026-06-08
+> 마지막 업데이트: 2026-06-10
 
 ---
 
@@ -11,7 +11,7 @@
 - **베이스**: `/Users/user/Documents/SalesDeck_WORLDCUP/(공통)NAVER_2026월드컵_프리미엄패키지.pptx` 구성을 참고
 - **데이터**: `/Users/user/Documents/salesdeck_asiangame/` 의 4개 항저우 아시안게임 PDF + 항저우 검색 지식베이스 PDF
 - **배포**: GitHub Pages (https://naversalesplanning.github.io/asiangame2026/)
-- **보안**: 비밀번호 `nasiangame2026` (sessionStorage 기반)
+- **보안**: 콘텐츠 암호화(AES-256-GCM). 비밀번호 `nasiangame2026`이 복호화 키 — 소스에 단가 평문 없음 (Session 7)
 
 ---
 
@@ -191,6 +191,21 @@
     - ⚠️ 중요: 브라우저 저장(localStorage/IndexedDB)은 파일에 안 담김. **배포 반영하려면 반드시 `💾 배포용 저장`으로 받은 index.html을 push**해야 함
 33. 헤드리스 Chrome 검증: URL 키 없으면 버튼 숨김(display:none) / `?edit=nag-edit` 시 노출 / 내보낸 HTML에 편집 텍스트·이미지 bake 확인 / body 클래스·contenteditable 속성 제거 확인
 
+### Session 7 — 콘텐츠 암호화 + AM 슬라이드 빌더 (2026-06-10)
+34. **콘텐츠 암호화 (StatiCrypt 방식)**: `.deck`(18장)을 **AES-256-GCM ciphertext**로만 소스에 둠. 소스 보기 해도 단가/내용은 암호문(`/*ENC-START*/const ENC_SALT/ENC_IV/ENC_DATA/*ENC-END*/`)만 보임.
+    - 게이트 비번 `nasiangame2026`이 곧 **복호화 키**: PBKDF2(SHA-256, 250k iters) → AES-GCM-256. 비번 입력 → 복호화 → `.deck` 주입 → `initDeck()`. 비번은 `sessionStorage['nag-pw']` 캐시(같은 탭 자동 해제), 🔒=캐시 삭제+reload.
+    - 오답 비번은 GCM 인증 실패로 거부(별도 해시 불필요). 평문 백업은 `_plaintext_backup_index.html`(gitignore). 최초/재빌드: `tools/encrypt.mjs`(Node WebCrypto, 동일 파라미터).
+35. **git 히스토리 평문 제거**: 첫 커밋부터 평문이라 전 히스토리를 단일 클린 커밋으로 squash(`56ea771`) 후 force-push. 백업 번들 `Documents/asiangame_history_backup_01e5d03.bundle`. (GitHub stale 커밋은 SHA로 한동안 잔존 — 필요 시 Support GC.)
+36. **💾 저장 시 새 비밀번호**: `prompt()`로 "새 비밀번호(빈칸=기존 유지, 취소=중단)". 새 비번 입력 시 그 비번으로만 열리는 파일 → **광고주별 덱 분리**(예: 삼성용 별도 비번). 저장 알림에 최종 비번 표시.
+37. **AM 모드 (`?edit=nag-am`, `AM_KEY='nag-am'`)**: `body.am-mode`. 표준 18장 **하드락**(수정·삭제·이미지교체 불가, 🔒 "표준 장표 — 수정 불가" 배지). `nag-edit`(작성자)는 전체 편집(회귀 없음). 잠금 판정 `isLocked()`.
+38. **슬라이드 추가/삭제 (커스텀 장표만)**: `➕ 슬라이드 추가` 팔레트 템플릿 3종 — **스페셜오퍼**(`tpl-offer`) / **빈배경**(`tpl-blank`, 이미지 1) / **패키지 세트**(`tpl-pkg-detail`+`tpl-pkg-price` 2장 동시, GOLD 상세 s14 + 단가표 s15 복제, **단가는 ○억·— 플레이스홀더**라 평문 미노출). 추가 장표(`data-custom`)만 편집·🗑삭제·↕이동. 작업 중 `nag-custom-v1` localStorage 스크래치(`data-scratch`) 보존, 💾 시 ciphertext에 baked+스크래치 정리.
+39. **삽입 위치 선택**: 수정모드에서 장표 사이 `＋ 슬라이드 추가하기` 존(hover) 클릭 → 그 자리에 삽입. 툴바 ➕는 맨 뒤 기본. 존은 edit-only, export 시 제거.
+40. **단가표 인라인 편집**: 커스텀 단가표(`.tbl`)에 `＋ 행 추가` + 행별 `✕` 삭제 + **TOTAL(단가/노출수) 자동 합산**(판매가는 수동). 컨트롤(`.slide-ctrls/.lock-badge/.insert-zone/.rowdel/.addrow-btn`)은 export 시 모두 제거.
+41. (보류) 엑셀/CSV 임포트 — 라이브러리 의존·열매핑 비용으로 후속. 인라인 행 편집으로 대체.
+42. **헤드리스 CDP 종합검증(라이브 URL, 18항목 통과)**: 복호화·18장 / AM 표준잠금·배지 / 작성자 회귀없음 / 삽입존·위치정확 / 패키지세트 +2·실단가없음 / 행 추가·삭제·TOTAL 자동합산(300,000,000) / 오퍼추가·커스텀삭제 / 새비번 재암호화→새비번만 복호화·기존거부.
+
+> ⚠️ 미결: 패키지 세트 템플릿에 상품 구성 항목명(트리플크라운 등)은 평문 유지 중(단가만 비움) — 항목명까지 비울지 미정. AM 배포 가이드 문서는 "수정 완료 후" 작성 예정.
+
 ---
 
 ## 📊 Git 커밋 히스토리
@@ -201,14 +216,21 @@
 | `442364f` | Fix: presentation centering + auto landscape PDF | 2026-05-13 |
 | `a50734b` | Presentation full-viewport fill + A4 landscape color print | 2026-05-13 |
 | `c89a521` | Restore 16:9 strict in presentation mode | 2026-05-13 |
+| `56ea771` | **(히스토리 재작성)** 단일 클린 스냅샷 — 과거 평문 단가 제거 + 암호화 발행본 | 2026-06-10 |
+| `e696063` | feat: 새 비밀번호 저장 + AM 슬라이드 빌더(추가/삭제) | 2026-06-10 |
+| `f5208a8` | feat: '패키지 세트' 팔레트 템플릿(GOLD 2장, 단가 플레이스홀더) | 2026-06-10 |
+| `ff7c14e` | feat: 장표 사이 '＋' 삽입 위치 선택 | 2026-06-10 |
+| `0b593f0` | feat: 단가표 인라인 행 추가/삭제 + TOTAL 자동합산 | 2026-06-10 |
+| `9e67a61` | tweak: 삽입 라벨 → '슬라이드 추가하기' | 2026-06-10 |
 
 ---
 
 ## 🔑 운영 가이드
 
-### 비밀번호
-- `nasiangame2026` (sessionStorage 단위로 기억)
-- 변경하려면: `index.html` 내 `const GATE_PW='nasiangame2026'` 수정 후 push
+### 비밀번호 (= 복호화 키, Session 7부터)
+- `nasiangame2026` — 게이트 비번이 곧 AES 복호화 키. 한 번 입력하면 `sessionStorage`에 캐시.
+- **비번 변경**: 소스 직접 수정 불가(덱은 암호문). `?edit=nag-edit`로 접속 → `💾 배포용 저장` 시 "새 비밀번호" 입력 → 그 비번으로 재암호화된 index.html을 push. (또는 `node tools/encrypt.mjs <새비번>`로 평문 백업 재암호화.)
+- 편집 진입: `?edit=nag-edit`(작성자 전체편집) / `?edit=nag-am`(AM — 표준 잠금, 커스텀 장표만)
 
 ### 이미지 추가
 - `images/` 폴더에 위 슬라이드 구성표의 파일명대로 PNG 저장 후 git push
