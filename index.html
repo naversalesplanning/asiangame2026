@@ -719,6 +719,8 @@ body.presenting #addBtn{display:none !important}
 .pi-offer{background:radial-gradient(70% 70% at 50% 40%,rgba(210,55,47,.35),transparent),linear-gradient(135deg,#1a1410,#2a2018);color:#FFEC8D;font-size:15px}
 .pi-offer span{color:#d5b200;font-size:20px}
 .pi-blank{background:repeating-linear-gradient(45deg,#f3ecdb,#f3ecdb 12px,#ede4c9 12px,#ede4c9 24px);color:rgba(11,20,16,.55);font-size:13px}
+.pi-pkg{background:linear-gradient(135deg,#3a2f12,#d5b200 280%);color:#1a1410;font-size:14px;font-weight:900}
+.pi-pkg span{font-size:20px}
 .pi-name{color:#fff;font-weight:800;font-size:14px}
 .pi-desc{color:rgba(255,255,255,.55);font-size:11.5px;margin-top:3px}
 .palette-cancel{margin-top:18px;width:100%;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8);border-radius:99px;font-weight:700;cursor:pointer}
@@ -878,6 +880,11 @@ body.presenting .present-counter{display:block}
         <div class="pi-name">빈 배경</div>
         <div class="pi-desc">자유 편집 캔버스</div>
       </button>
+      <button class="palette-item" data-tpl="tpl-pkg-detail,tpl-pkg-price" type="button">
+        <div class="pi-prev pi-pkg"><span>📦</span>PACKAGE SET</div>
+        <div class="pi-name">패키지 세트</div>
+        <div class="pi-desc">골드 패키지 소개 2장 (상세 + 단가표) · 단가는 비어있음</div>
+      </button>
     </div>
     <button class="palette-cancel" id="paletteCancel" type="button">취소</button>
   </div>
@@ -909,6 +916,88 @@ body.presenting .present-counter{display:block}
       <img class="mock-img" alt="" style="display:none" onerror="this.style.display='none';this.parentElement.classList.add('no-img')"/>
       <div class="cust-ph">🖼<br>클릭해서 이미지 추가</div>
     </div></div>
+</section></template>
+
+<!-- 패키지 세트: GOLD 상세 (s14 레이아웃 복제, 단가는 플레이스홀더) -->
+<template id="tpl-pkg-detail"><section class="slide s14" data-custom="1">
+    <div class="topbar"></div>
+    <div class="left">
+      <div><div class="ribbon">ASIAN GAMES × NAVER</div></div>
+      <div class="silhouette"></div>
+      <div>
+        <div class="name">GOLD</div>
+        <div class="name-sub">최상위 프리미엄 패키지</div>
+        <div class="pitch">메달 경기 당일, 네이버의 모든 지면을<br>우리 브랜드로 채웁니다.</div>
+        <div class="pricebox">
+          <div class="p">○억</div>
+          <div class="s">서비스율 ○%</div>
+        </div>
+        <div class="strap">가장 중요한 대한민국 메달 결정전 당일 집행</div>
+      </div>
+    </div>
+    <div class="right">
+      <div>
+        <h2>가장 중요한 메달 경기 당일,<br>메인, 검색, 특집페이지, 동영상, 디스플레이까지<br><em>지면 전체를 단독 운영</em>하는 최상위 패키지</h2>
+        <p class="lead">대한민국 메달 결정전 당일, 시청자의 모든 동선에 노출되는 풀퍼널 패키지입니다.</p>
+      </div>
+      <div class="devices">
+        <div class="lap"><div class="scr">
+          <img class="mock-img" alt="" style="display:none" onerror="this.style.display='none';this.parentNode.classList.add('no-img')"/>
+          <div class="ph-fallback"><div class="ph-tag">💻 IMAGE</div><div class="ph-path">클릭해서<br>이미지 추가</div><div class="ph-hint">PC 노출 예시</div></div>
+        </div></div>
+        <div class="pho"><div class="mp"><div class="scr">
+          <img class="mock-img" alt="" style="display:none" onerror="this.style.display='none';this.parentNode.classList.add('no-img')"/>
+          <div class="ph-fallback small"><div class="ph-tag">📱</div><div class="ph-path">이미지<br>추가</div></div>
+        </div></div></div>
+      </div>
+      <div class="cats">
+        <div class="cat"><div class="h">메인 &amp; 검색</div><div class="li">PC 전면형</div><div class="li">트리플크라운 (MO)</div><div class="li">쇼케이스 2탭</div><div class="li">통합검색 상단, 중단</div></div>
+        <div class="cat"><div class="h">특집페이지</div><div class="li">스포츠홈 브랜딩</div><div class="li">특집페이지 DA</div><div class="li">특집페이지 배너 3종</div><div class="li">PC 서브</div></div>
+        <div class="cat"><div class="h">치지직</div><div class="li">치지직 메인 브랜딩</div><div class="li">치지직 First View</div><div class="li">응원방송 노출</div><div class="li">하이라이트 노출</div></div>
+        <div class="cat"><div class="h">동영상</div><div class="li">생중계 프리/미드롤</div><div class="li">VOD 프리/미드롤</div><div class="li">하이라이트 클립</div><div class="li">숏폼 컨텐츠</div></div>
+      </div>
+    </div>
+</section></template>
+
+<!-- 패키지 세트: GOLD 단가 구성 (s15 레이아웃 복제, 단가·노출수·TOTAL·판매가 = 빈칸) -->
+<template id="tpl-pkg-price"><section class="slide s15" data-custom="1">
+    <div class="topbar"></div>
+    <div class="left">
+      <div><div class="rb">ASIAN GAMES × NAVER</div></div>
+      <div>
+        <div class="name">GOLD</div>
+        <div class="name-sub">최상위 프리미엄 패키지</div>
+        <div class="pitch">메달 경기 당일, 네이버 모든 지면을 우리 브랜드로.</div>
+        <div class="pricebox"><div class="p">○억</div><div class="s">서비스율 ○%</div></div>
+      </div>
+    </div>
+    <div class="right">
+      <h2><em>GOLD 패키지</em> 단가 구성</h2>
+      <div class="lead">각 단가를 클릭해 입력하세요. (단위: KRW, 실제 노출수는 운영 환경상 달라질 수 있음)</div>
+      <table class="tbl">
+        <thead>
+          <tr><th>영역</th><th>지면</th><th>구좌 수</th><th>단가</th><th>예상 노출수</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>메인</td><td>트리플크라운</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>메인</td><td>쇼케이스 2탭</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>메인</td><td>PC 전면형</td><td>2</td><td>—</td><td>—</td></tr>
+          <tr><td>동영상</td><td>프리롤 / 미드롤</td><td>5</td><td>—</td><td>—</td></tr>
+          <tr><td>동영상</td><td>치지직 First View</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>검색</td><td>통검 상단 / 중단</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>치지직</td><td>메인 브랜딩</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>특집페이지</td><td>스포츠홈 브랜딩</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>특집페이지</td><td>상단 스마트 채널</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>특집페이지</td><td>중단 피드</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>특집페이지</td><td>중하단 통합 DA</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>특집페이지</td><td>PC 서브</td><td>1</td><td>—</td><td>—</td></tr>
+          <tr><td>특집페이지</td><td>특집배너 3종</td><td>2</td><td>—</td><td>—</td></tr>
+          <tr class="sum"><td colspan="2">TOTAL</td><td></td><td>—</td><td>—</td></tr>
+          <tr class="price"><td colspan="3">판매가</td><td>—</td><td></td></tr>
+        </tbody>
+      </table>
+      <div class="note">※ 실제 노출수는 운영 환경상 달라질 수 있음.</div>
+    </div>
 </section></template>
 
 <script>
@@ -1390,7 +1479,7 @@ document.addEventListener('keydown',e=>{
   if(addBtn) addBtn.addEventListener('click',()=>{ if(editing && palette) palette.hidden=false; });
   if(palette){
     palette.querySelectorAll('.palette-item').forEach(b=>{
-      b.addEventListener('click',()=>{ palette.hidden=true; addCustomSlide(b.dataset.tpl); });
+      b.addEventListener('click',()=>{ palette.hidden=true; b.dataset.tpl.split(',').forEach(t=>addCustomSlide(t.trim())); });
     });
     const pc=document.getElementById('paletteCancel'); if(pc) pc.addEventListener('click',()=>palette.hidden=true);
     palette.addEventListener('click',e=>{ if(e.target===palette) palette.hidden=true; });
