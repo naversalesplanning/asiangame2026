@@ -702,6 +702,67 @@ body.editing .img-editable:hover{outline:2px dashed #d2372f;outline-offset:2px;b
 body.editing .img-editable:hover::after{content:'🖼 클릭해서 이미지 교체';position:absolute;left:50%;top:8px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#FFEC8D;font-size:11px;font-weight:700;padding:4px 11px;border-radius:99px;z-index:50;white-space:nowrap;pointer-events:none}
 @media print{.edit-banner{display:none !important}[contenteditable]{outline:none !important;background:none !important}}
 
+/* ===== AM slide builder (add / delete custom slides) ===== */
+#addBtn{display:none}
+body.edit-enabled.editing #addBtn{display:inline-block}
+body.presenting #addBtn{display:none !important}
+
+/* slide add palette */
+.palette{position:fixed;inset:0;z-index:10000;background:rgba(10,10,10,.62);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center}
+.palette[hidden]{display:none}
+.palette-box{background:#221d19;border:1px solid rgba(213,178,0,.3);border-radius:18px;padding:28px 30px;width:min(92vw,640px);box-shadow:0 30px 80px -20px rgba(0,0,0,.7)}
+.palette-h{color:#FFEC8D;font-size:18px;font-weight:900;letter-spacing:.02em;margin-bottom:18px}
+.palette-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.palette-item{display:block;text-align:left;background:#2c2620;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;cursor:pointer;transition:border-color .15s,transform .12s}
+.palette-item:hover{border-color:#d5b200;transform:translateY(-2px)}
+.pi-prev{height:104px;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;letter-spacing:.04em;margin-bottom:10px;overflow:hidden}
+.pi-offer{background:radial-gradient(70% 70% at 50% 40%,rgba(210,55,47,.35),transparent),linear-gradient(135deg,#1a1410,#2a2018);color:#FFEC8D;font-size:15px}
+.pi-offer span{color:#d5b200;font-size:20px}
+.pi-blank{background:repeating-linear-gradient(45deg,#f3ecdb,#f3ecdb 12px,#ede4c9 12px,#ede4c9 24px);color:rgba(11,20,16,.55);font-size:13px}
+.pi-name{color:#fff;font-weight:800;font-size:14px}
+.pi-desc{color:rgba(255,255,255,.55);font-size:11.5px;margin-top:3px}
+.palette-cancel{margin-top:18px;width:100%;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8);border-radius:99px;font-weight:700;cursor:pointer}
+.palette-cancel:hover{background:rgba(255,255,255,.06)}
+
+/* per-custom-slide controls (only while editing) */
+.slide-ctrls{display:none}
+body.editing .slide[data-custom] .slide-ctrls{display:flex;gap:6px;position:absolute;top:10px;right:10px;z-index:40}
+.slide-ctrls button{width:30px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.62);color:#FFEC8D;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.slide-ctrls button:hover{background:rgba(210,55,47,.85);color:#fff}
+.slide-ctrls .sc-del:hover{background:#d2372f}
+.slide[data-custom]{outline:2px dashed rgba(213,178,0,0)}
+body.editing .slide[data-custom]{outline:2px dashed rgba(213,178,0,.5);outline-offset:-4px}
+
+/* AM mode: hard-lock standard slides */
+.lock-badge{display:none}
+body.am-mode.editing .slide:not([data-custom]) .lock-badge{display:flex;align-items:center;gap:7px;position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:45;background:rgba(0,0,0,.72);color:#bdb6ad;font-size:12px;font-weight:800;letter-spacing:.02em;padding:6px 14px;border-radius:99px;backdrop-filter:blur(8px);white-space:nowrap}
+body.am-mode.editing .slide:not([data-custom]){filter:grayscale(.12) brightness(.96)}
+
+/* ===== custom slide templates ===== */
+/* Special Offer for You */
+.s-offer{background:linear-gradient(140deg,#1a1410 0%,#2a2018 55%,#0f0b08 100%);color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.s-offer .of-bg{position:absolute;inset:0;background:radial-gradient(55% 55% at 50% 38%,rgba(210,55,47,.22) 0%,transparent 62%);z-index:0}
+.s-offer .of-wrap{position:relative;z-index:2;text-align:center;width:84%;max-width:1180px}
+.s-offer .of-eyebrow{font-size:1.05cqw;letter-spacing:.34em;color:#FFEC8D;font-weight:800;text-transform:uppercase;margin-bottom:1.6cqw}
+.s-offer .of-title{font-size:5.2cqw;font-weight:900;line-height:1.04;letter-spacing:-.01em;margin:0}
+.s-offer .of-title em{font-style:normal;background:linear-gradient(90deg,#FFEC8D,#d5b200);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.s-offer .of-lede{font-size:1.7cqw;color:rgba(247,242,230,.78);margin:2cqw 0 3cqw;line-height:1.5}
+.s-offer .of-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5cqw}
+.s-offer .of-card{background:rgba(255,255,255,.05);border:1px solid rgba(213,178,0,.28);border-radius:1cqw;padding:2cqw 1.6cqw;text-align:left}
+.s-offer .of-h{font-size:1.7cqw;font-weight:900;color:#FFEC8D;margin-bottom:.8cqw}
+.s-offer .of-b{font-size:1.35cqw;color:rgba(247,242,230,.82);line-height:1.5}
+
+/* Blank canvas (title + body + 1 image) */
+.s-blank{background:var(--ink);color:#fff;display:flex;align-items:center;gap:4cqw;padding:0 7cqw}
+.s-blank .bl-wrap{flex:1;min-width:0}
+.s-blank .bl-eyebrow{font-size:1.05cqw;letter-spacing:.32em;color:#d5b200;font-weight:800;text-transform:uppercase;margin-bottom:1.4cqw}
+.s-blank .bl-title{font-size:4cqw;font-weight:900;line-height:1.08;margin:0 0 2cqw}
+.s-blank .bl-body{font-size:1.6cqw;color:rgba(247,242,230,.8);line-height:1.6;margin:0}
+.s-blank .bl-imgwrap{width:34cqw;height:64%}
+.cust-imgbox{position:relative;width:100%;height:100%;border-radius:1cqw;overflow:hidden}
+.cust-imgbox .mock-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;border-radius:inherit}
+.cust-imgbox .cust-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6cqw;background:repeating-linear-gradient(45deg,rgba(213,178,0,.06),rgba(213,178,0,.06) 12px,rgba(213,178,0,.12) 12px,rgba(213,178,0,.12) 24px);border:1.5px dashed rgba(213,178,0,.4);border-radius:1cqw;color:rgba(247,242,230,.7);font-size:1.5cqw;font-weight:800;text-align:center;z-index:1;line-height:1.4}
+
 /* ---------- print (16:9 full-bleed landscape, full color) ---------- */
 @page{size:297mm 167.0625mm;margin:0}
 @media print{
@@ -790,6 +851,7 @@ body.presenting .present-counter{display:block}
 <div class="toolbar">
   <button id="fsBtn" title="프리젠테이션 시작 (F), ESC로 종료">▶ 프리젠테이션</button>
   <button id="editBtn" title="텍스트, 이미지 수정 (E)">✏️ 수정</button>
+  <button id="addBtn" title="슬라이드 추가">➕ 슬라이드 추가</button>
   <button id="exportBtn" title="편집 내용을 담은 배포용 index.html 다운로드">💾 배포용 저장</button>
   <button id="resetBtn" title="수정 내용 모두 초기화">↺ 초기화</button>
   <button id="pdfBtn" title="PDF 파일로 다운로드">⬇ PDF 다운로드</button>
@@ -800,6 +862,54 @@ body.presenting .present-counter{display:block}
   <span class="hint">텍스트는 클릭해서 바로 편집, 이미지는 클릭해서 교체, 변경은 이 브라우저에 자동 저장됩니다</span>
 </div>
 <div class="present-counter" id="presentCounter">1 / 18</div>
+
+<!-- AM: slide-add palette -->
+<div class="palette" id="palette" hidden>
+  <div class="palette-box">
+    <div class="palette-h">슬라이드 추가</div>
+    <div class="palette-grid">
+      <button class="palette-item" data-tpl="tpl-offer" type="button">
+        <div class="pi-prev pi-offer"><span>★</span>Special Offer</div>
+        <div class="pi-name">스페셜 오퍼 포유</div>
+        <div class="pi-desc">광고주 맞춤 제안 한 장</div>
+      </button>
+      <button class="palette-item" data-tpl="tpl-blank" type="button">
+        <div class="pi-prev pi-blank">제목 / 내용 / 이미지</div>
+        <div class="pi-name">빈 배경</div>
+        <div class="pi-desc">자유 편집 캔버스</div>
+      </button>
+    </div>
+    <button class="palette-cancel" id="paletteCancel" type="button">취소</button>
+  </div>
+</div>
+
+<!-- custom slide templates (cloned by the slide builder) -->
+<template id="tpl-offer"><section class="slide s-offer" data-custom="1">
+    <div class="topbar"></div>
+    <div class="of-bg"></div>
+    <div class="of-wrap">
+      <div class="of-eyebrow">SPECIAL OFFER</div>
+      <h1 class="of-title">Special Offer <em>for You</em></h1>
+      <p class="of-lede">귀사만을 위한 맞춤 제안입니다. 텍스트를 클릭해 자유롭게 수정하세요.</p>
+      <div class="of-cards">
+        <div class="of-card"><div class="of-h">맞춤 혜택 ①</div><div class="of-b">여기에 제안 내용을 입력하세요.</div></div>
+        <div class="of-card"><div class="of-h">맞춤 혜택 ②</div><div class="of-b">여기에 제안 내용을 입력하세요.</div></div>
+        <div class="of-card"><div class="of-h">맞춤 혜택 ③</div><div class="of-b">여기에 제안 내용을 입력하세요.</div></div>
+      </div>
+    </div>
+</section></template>
+<template id="tpl-blank"><section class="slide s-blank" data-custom="1">
+    <div class="topbar"></div>
+    <div class="bl-wrap">
+      <div class="bl-eyebrow">SECTION</div>
+      <h2 class="bl-title">제목을 입력하세요</h2>
+      <p class="bl-body">여기에 내용을 자유롭게 입력하세요. 이 장표는 빈 캔버스입니다. 우측 이미지는 클릭해서 교체할 수 있습니다.</p>
+    </div>
+    <div class="bl-imgwrap"><div class="cust-imgbox no-img">
+      <img class="mock-img" alt="" style="display:none" onerror="this.style.display='none';this.parentElement.classList.add('no-img')"/>
+      <div class="cust-ph">🖼<br>클릭해서 이미지 추가</div>
+    </div></div>
+</section></template>
 
 <script>
 /* ========== CONTENT ENCRYPTION GATE (StatiCrypt-style) ========== */
@@ -906,32 +1016,41 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-const slides=document.querySelectorAll('.slide');
 const hud=document.getElementById('hud');
-slides.forEach((s,i)=>{
-  const a=document.createElement('a');
-  a.href='#'+s.id;a.title=`Slide ${i+1}`;
-  hud.appendChild(a);
-});
-const dots=[...hud.children];
-const io=new IntersectionObserver(es=>{
-  es.forEach(e=>{
-    if(e.isIntersecting){
-      const i=[...slides].indexOf(e.target);
-      dots.forEach(d=>d.classList.remove('on'));
-      if(dots[i]) dots[i].classList.add('on');
-    }
+let _hudIO=null;
+// rebuildable so added/deleted custom slides stay in sync (HUD dots + observer)
+function rebuildHud(){
+  hud.innerHTML='';
+  const slides=[...document.querySelectorAll('.slide')];
+  slides.forEach((s,i)=>{
+    if(!s.id) s.id='cs-'+i;
+    const a=document.createElement('a');
+    a.href='#'+s.id; a.title='Slide '+(i+1);
+    hud.appendChild(a);
   });
-},{threshold:.55});
-slides.forEach(s=>io.observe(s));
+  const dots=[...hud.children];
+  if(_hudIO) _hudIO.disconnect();
+  _hudIO=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        const i=slides.indexOf(e.target);
+        dots.forEach(d=>d.classList.remove('on'));
+        if(dots[i]) dots[i].classList.add('on');
+      }
+    });
+  },{threshold:.55});
+  slides.forEach(s=>_hudIO.observe(s));
+}
+rebuildHud();
 
-// keyboard scroll nav (only when NOT presenting)
+// keyboard scroll nav (only when NOT presenting) — queries slides live
 let cur=0;
 document.addEventListener('keydown',e=>{
   if(document.body.classList.contains('presenting'))return;
   if(document.body.classList.contains('editing'))return;
   const ae=document.activeElement, tag=ae.tagName;
   if(tag==='INPUT'||tag==='TEXTAREA'||ae.isContentEditable)return;
+  const slides=[...document.querySelectorAll('.slide')];
   if(e.key==='ArrowDown'||e.key==='ArrowRight'||e.key===' '){
     e.preventDefault();cur=Math.min(slides.length-1,cur+1);
     slides[cur].scrollIntoView({behavior:'smooth',block:'center'});
@@ -949,11 +1068,16 @@ document.addEventListener('keydown',e=>{
   const deck=document.querySelector('.deck');
   if(!deck) return;
 
-  /* ---- secret unlock: edit controls appear only with ?edit=<key> (or #<key>) ---- */
-  const EDIT_KEY='nag-edit';
-  const editEnabled = new URLSearchParams(location.search).get('edit')===EDIT_KEY
-                   || location.hash.replace('#','')===EDIT_KEY;
+  /* ---- secret unlock: edit controls appear only with ?edit=<key> (or #<key>) ----
+     nag-edit = 작성자 풀편집 / nag-am = AM 모드(표준 장표 잠금, 커스텀 장표만 편집) */
+  const EDIT_KEY='nag-edit', AM_KEY='nag-am', CUSTOM_KEY='nag-custom-v1';
+  const urlKey = new URLSearchParams(location.search).get('edit') || location.hash.replace('#','');
+  const amMode = urlKey===AM_KEY;
+  const editEnabled = amMode || urlKey===EDIT_KEY;
   if(editEnabled) document.body.classList.add('edit-enabled');
+  if(amMode) document.body.classList.add('am-mode');
+  // in AM mode a standard (non-custom) slide is locked
+  function isLocked(el){ return amMode && !el.closest('.slide[data-custom]'); }
 
   /* ---- collect editable text leaves (text node only, or with <br>) ---- */
   const SKIP=new Set(['SCRIPT','STYLE','BUTTON','INPUT','TEXTAREA','IMG','BR']);
@@ -961,28 +1085,34 @@ document.addEventListener('keydown',e=>{
     if(SKIP.has(el.tagName)) return false;
     if(el.closest('svg')) return false;
     if(el.closest('.ph-fallback')||el.closest('.cover-ph-fallback')) return false;
+    if(el.closest('.slide-ctrls')||el.classList.contains('lock-badge')||el.classList.contains('cust-ph')) return false;
     if(!el.textContent.trim()) return false;
     for(const n of el.childNodes){
       if(n.nodeType===1 && n.tagName!=='BR') return false; // has a non-<br> element child
     }
     return true;
   }
-  const textEls=[];
-  deck.querySelectorAll('*').forEach(el=>{ if(isTextLeaf(el)) textEls.push(el); });
-  textEls.forEach((el,i)=>el.dataset.eid='t'+i);
 
-  /* ---- restore saved text (BEFORE counter init so numbers animate to new values) ---- */
+  /* ---- text persistence (standard slides → eid map; custom slides → snapshot) ---- */
   function loadTextMap(){ try{return JSON.parse(localStorage.getItem(TEXT_KEY)||'{}')}catch(e){return {}} }
   const textMap=loadTextMap();
-  textEls.forEach(el=>{ const v=textMap[el.dataset.eid]; if(v!=null) el.innerHTML=v; });
-
   let saveTimer=null;
   function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{
     try{ localStorage.setItem(TEXT_KEY, JSON.stringify(textMap)); }catch(e){ console.warn('text save failed',e); }
   },400); }
-  textEls.forEach(el=>{
-    el.addEventListener('input',()=>{ if(!editing)return; textMap[el.dataset.eid]=el.innerHTML; scheduleSave(); });
-  });
+  let eidCounter=0;
+  function wireTextLeaf(el){
+    el.dataset.eid='t'+(eidCounter++);
+    el.addEventListener('input',()=>{
+      if(!editing) return;
+      if(el.closest('.slide[data-custom]')) scheduleCustomSave();
+      else { textMap[el.dataset.eid]=el.innerHTML; scheduleSave(); }
+    });
+  }
+  // initial collection: STANDARD slides only (custom slides handled via enhanceCustomSlide)
+  const textEls=[];
+  deck.querySelectorAll('*').forEach(el=>{ if(isTextLeaf(el) && !el.closest('.slide[data-custom]')) textEls.push(el); });
+  textEls.forEach(el=>{ wireTextLeaf(el); const v=textMap[el.dataset.eid]; if(v!=null) el.innerHTML=v; });
 
   /* ---- IndexedDB for images ---- */
   function idb(){ return new Promise((res,rej)=>{ const r=indexedDB.open(IDB_NAME,1);
@@ -993,40 +1123,118 @@ document.addEventListener('keydown',e=>{
   function idbClear(){ return idb().then(db=>new Promise((res,rej)=>{ const tx=db.transaction(IDB_STORE,'readwrite'); tx.objectStore(IDB_STORE).clear(); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })); }
 
   /* ---- editable images ---- */
-  const imgEls=[...deck.querySelectorAll('img.mock-img, img.aichi-logo, img.aichi-img')];
-  imgEls.forEach((img,i)=>{ img.dataset.ieid='i'+i; });
+  let ieidCounter=0;
   function applyImg(img,dataUrl){
     img.src=dataUrl; img.style.display='';
     if(img.parentNode) img.parentNode.classList.remove('no-img');
   }
-  // restore saved images
-  if(window.indexedDB){
-    idbAll().then(({keys,vals})=>{ keys.forEach((k,i)=>{ const img=deck.querySelector('[data-ieid="'+k+'"]'); if(img) applyImg(img,vals[i]); }); }).catch(()=>{});
-  }
-  // click hotspots on image hosts
   const fileInput=document.createElement('input');
   fileInput.type='file'; fileInput.accept='image/*'; fileInput.style.display='none';
   document.body.appendChild(fileInput);
   let pendingImg=null;
-  imgEls.forEach(img=>{
+  function wireImage(img){
+    if(!img.dataset.ieid) img.dataset.ieid='i'+(ieidCounter++);
     const host=img.parentNode; if(!host) return;
     host.classList.add('img-editable');
     host.addEventListener('click',e=>{
       if(!editing) return;
+      if(isLocked(host)) return;          // AM mode: standard slide images locked
       e.preventDefault(); e.stopPropagation();
       pendingImg=img; fileInput.value=''; fileInput.click();
     });
-  });
+  }
   fileInput.addEventListener('change',()=>{
     const f=fileInput.files&&fileInput.files[0]; if(!f||!pendingImg) return;
     const rd=new FileReader();
     rd.onload=()=>{
       const url=rd.result, img=pendingImg; pendingImg=null;
       applyImg(img,url);
-      idbSet(img.dataset.ieid,url).catch(err=>alert('이미지 저장에 실패했습니다: '+err.message));
+      if(img.closest('.slide[data-custom]')) scheduleCustomSave();   // custom imgs ride in the slide snapshot/ciphertext
+      else idbSet(img.dataset.ieid,url).catch(err=>alert('이미지 저장에 실패했습니다: '+err.message));
     };
     rd.readAsDataURL(f);
   });
+  // initial standard images (custom-slide images wired in enhanceCustomSlide)
+  const imgEls=[...deck.querySelectorAll('img.mock-img, img.aichi-logo, img.aichi-img')].filter(img=>!img.closest('.slide[data-custom]'));
+  imgEls.forEach(wireImage);
+  if(window.indexedDB){
+    idbAll().then(({keys,vals})=>{ keys.forEach((k,i)=>{ const img=deck.querySelector('[data-ieid="'+k+'"]'); if(img) applyImg(img,vals[i]); }); }).catch(()=>{});
+  }
+
+  /* ---- custom slide builder (add / delete / move / persist) ---- */
+  function enhanceCustomSlide(slide){
+    slide.dataset.custom='1';
+    slide.querySelectorAll('*').forEach(el=>{ if(isTextLeaf(el) && !el.dataset.eid) wireTextLeaf(el); });
+    slide.querySelectorAll('img.mock-img, img.aichi-logo, img.aichi-img').forEach(wireImage);
+    if(!slide.querySelector(':scope > .slide-ctrls')){
+      const c=document.createElement('div'); c.className='slide-ctrls';
+      c.innerHTML='<button class="sc-up" type="button" title="위로">↑</button><button class="sc-down" type="button" title="아래로">↓</button><button class="sc-del" type="button" title="삭제">🗑</button>';
+      c.querySelector('.sc-up').addEventListener('click',ev=>{ev.stopPropagation();moveCustom(slide,-1);});
+      c.querySelector('.sc-down').addEventListener('click',ev=>{ev.stopPropagation();moveCustom(slide,1);});
+      c.querySelector('.sc-del').addEventListener('click',ev=>{ev.stopPropagation();deleteCustom(slide);});
+      slide.appendChild(c);
+    }
+    if(editing) slide.querySelectorAll('[data-eid]').forEach(el=>el.setAttribute('contenteditable','true'));
+  }
+  function addCustomSlide(tplId){
+    const tpl=document.getElementById(tplId); if(!tpl) return;
+    const node=tpl.content.firstElementChild.cloneNode(true);
+    node.dataset.scratch='1';
+    const slides=deck.querySelectorAll('.slide');
+    const last=slides[slides.length-1];
+    if(last) deck.insertBefore(node,last); else deck.appendChild(node);  // before the closing slide
+    enhanceCustomSlide(node);
+    rebuildHud();
+    scheduleCustomSave();
+    node.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function deleteCustom(slide){
+    if(!confirm('이 장표를 삭제할까요?')) return;
+    slide.remove(); rebuildHud(); scheduleCustomSave();
+  }
+  function moveCustom(slide,dir){
+    const slides=[...deck.querySelectorAll('.slide')];
+    const i=slides.indexOf(slide), j=i+dir;
+    if(j<0||j>=slides.length) return;
+    const ref=slides[j];
+    deck.insertBefore(slide, dir<0?ref:ref.nextSibling);
+    rebuildHud(); scheduleCustomSave();
+    slide.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function cleanCustomClone(slide){
+    const c=slide.cloneNode(true);
+    c.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('contenteditable'));
+    c.querySelectorAll('[data-eid]').forEach(e=>e.removeAttribute('data-eid'));
+    c.querySelectorAll('[data-ieid]').forEach(e=>e.removeAttribute('data-ieid'));
+    c.querySelectorAll('.slide-ctrls,.lock-badge').forEach(e=>e.remove());
+    c.querySelectorAll('.img-editable').forEach(e=>e.classList.remove('img-editable'));
+    c.removeAttribute('data-scratch'); c.classList.remove('active');
+    return c;
+  }
+  let customTimer=null;
+  function snapshotCustom(){
+    const out=[];
+    deck.querySelectorAll('.slide[data-custom][data-scratch]').forEach(s=>{
+      let n=s.nextElementSibling, beforeId=null;
+      while(n){ if(n.classList.contains('slide') && !n.dataset.custom){ beforeId=n.id; break; } n=n.nextElementSibling; }
+      out.push({beforeId, html: cleanCustomClone(s).outerHTML});
+    });
+    try{ localStorage.setItem(CUSTOM_KEY, JSON.stringify(out)); }catch(e){ console.warn('custom save failed',e); }
+  }
+  function scheduleCustomSave(){ clearTimeout(customTimer); customTimer=setTimeout(snapshotCustom,400); }
+  function restoreCustom(){
+    let saved; try{ saved=JSON.parse(localStorage.getItem(CUSTOM_KEY)||'[]'); }catch(e){ return; }
+    if(!Array.isArray(saved)) return;
+    saved.forEach(({beforeId,html})=>{
+      const tmp=document.createElement('div'); tmp.innerHTML=(html||'').trim();
+      const node=tmp.firstElementChild; if(!node) return;
+      node.dataset.scratch='1';
+      let ref = beforeId ? deck.querySelector('#'+(window.CSS&&CSS.escape?CSS.escape(beforeId):beforeId)) : null;
+      if(!ref){ const slides=deck.querySelectorAll('.slide'); ref=slides[slides.length-1]||null; }
+      if(ref) deck.insertBefore(node,ref); else deck.appendChild(node);
+      enhanceCustomSlide(node);
+    });
+  }
 
   /* ---- edit mode toggle ---- */
   let editing=false;
@@ -1036,7 +1244,12 @@ document.addEventListener('keydown',e=>{
     document.body.classList.toggle('editing',on);
     editBtn.classList.toggle('on',on);
     editBtn.textContent= on ? '✓ 수정완료' : '✏️ 수정';
-    textEls.forEach(el=>{ if(on) el.setAttribute('contenteditable','true'); else el.removeAttribute('contenteditable'); });
+    // query live so dynamically-added custom slides are included; AM mode leaves standard slides locked
+    document.querySelectorAll('.deck [data-eid]').forEach(el=>{
+      if(on && !isLocked(el)) el.setAttribute('contenteditable','true');
+      else el.removeAttribute('contenteditable');
+    });
+    if(on && palette) palette.hidden=true;
   }
   // finishing edit (수정완료) auto-downloads the deployable HTML; starting just turns it on
   function toggleEdit(){
@@ -1060,8 +1273,9 @@ document.addEventListener('keydown',e=>{
 
   /* ---- reset all edits ---- */
   document.getElementById('resetBtn').addEventListener('click',()=>{
-    if(!confirm('수정한 모든 텍스트와 이미지를 지우고 원본으로 되돌릴까요?\n(이 브라우저에 저장된 편집 내용이 삭제됩니다)')) return;
+    if(!confirm('수정한 모든 텍스트·이미지·추가한 장표를 지우고 원본으로 되돌릴까요?\n(이 브라우저에 저장된 편집 내용이 삭제됩니다)')) return;
     localStorage.removeItem(TEXT_KEY);
+    localStorage.removeItem(CUSTOM_KEY);
     const done=()=>location.reload();
     if(window.indexedDB) idbClear().then(done).catch(done); else done();
   });
@@ -1069,18 +1283,25 @@ document.addEventListener('keydown',e=>{
   /* ---- export a deployable, ENCRYPTED index.html with edits baked in ---- */
   async function exportHTML(){
     if(editing) setEditing(false); // strip contenteditable + editing class from live DOM first
-    const pw=sessionStorage.getItem('nag-pw');
-    if(!pw){ alert('암호화 비밀번호를 찾을 수 없습니다.\n다시 비밀번호를 입력해 접속한 뒤 저장해주세요.'); return; }
+    const curPw=sessionStorage.getItem('nag-pw');
+    if(!curPw){ alert('암호화 비밀번호를 찾을 수 없습니다.\n다시 비밀번호를 입력해 접속한 뒤 저장해주세요.'); return; }
+    // 새 비밀번호로 저장할지 묻는다 (광고주별 덱 분리용). [취소]=저장 중단, 빈칸=기존 유지.
+    const np=prompt('이 파일을 열 때 쓸 비밀번호를 정하세요.\n\n• 기존 비밀번호 그대로 → 빈칸으로 두고 [확인]\n• 광고주별로 분리 → 새 비밀번호 입력 후 [확인]\n\n⚠️ 비밀번호를 잊으면 이 파일을 다시 열 수 없습니다.','');
+    if(np===null) return; // 취소 → 저장 안 함
+    const pw=np.trim()?np.trim():curPw;
+    const pwChanged=pw!==curPw;
     const exportBtn=document.getElementById('exportBtn');
     const prev=exportBtn?exportBtn.textContent:'';
     if(exportBtn){ exportBtn.disabled=true; exportBtn.textContent='암호화 중…'; }
     try{
-      // 1) 현재 편집된 deck 마크업 정리 (편집 흔적 제거)
+      // 1) 현재 편집된 deck 마크업 정리 (편집 흔적 제거, 단 data-custom은 유지해 재편집 때 인식)
       const deckClone=deck.cloneNode(true);
       deckClone.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('contenteditable'));
       deckClone.querySelectorAll('.slide.active').forEach(e=>e.classList.remove('active'));
       deckClone.querySelectorAll('[data-eid]').forEach(e=>e.removeAttribute('data-eid'));
       deckClone.querySelectorAll('[data-ieid]').forEach(e=>e.removeAttribute('data-ieid'));
+      deckClone.querySelectorAll('[data-scratch]').forEach(e=>e.removeAttribute('data-scratch'));
+      deckClone.querySelectorAll('.slide-ctrls,.lock-badge').forEach(e=>e.remove());
       deckClone.querySelectorAll('.img-editable').forEach(e=>e.classList.remove('img-editable'));
       const deckHTML=deckClone.innerHTML;
       // 2) 암호화 (텍스트 + 교체 이미지 data URL까지 ciphertext 안으로)
@@ -1100,7 +1321,10 @@ document.addEventListener('keydown',e=>{
       const a=document.createElement('a');
       a.href=url; a.download='index.html'; document.body.appendChild(a); a.click(); a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),1500);
-      alert('수정완료. 편집 내용을 암호화한 index.html을 다운로드했습니다.\n\n이 파일을 GitHub 저장소에 올리면(push) 모두가 이 편집본을 보게 됩니다.\n소스 보기를 해도 단가/내용은 암호문으로만 보입니다.');
+      // 추가한 장표는 이제 파일에 구워졌으므로 스크래치 버퍼 정리 (재로드 시 중복 방지)
+      deck.querySelectorAll('.slide[data-custom]').forEach(s=>delete s.dataset.scratch);
+      localStorage.removeItem(CUSTOM_KEY);
+      alert('수정완료. 편집 내용을 암호화한 index.html을 다운로드했습니다.\n\n🔑 이 파일의 비밀번호: '+pw+(pwChanged?'   ← 새 비밀번호로 변경됨!':'   (기존과 동일)')+'\n\n이 파일을 원하는 곳에 올리면(push/호스팅) 위 비밀번호로만 열립니다.\n소스 보기를 해도 단가/내용은 암호문으로만 보입니다.');
     }catch(err){
       alert('암호화 저장 중 문제가 발생했습니다.\n'+(err&&err.message?err.message:err));
     }finally{
@@ -1159,6 +1383,31 @@ document.addEventListener('keydown',e=>{
       pdfBtn.disabled=false; pdfBtn.textContent=orig;
     }
   });
+
+  /* ========== SLIDE BUILDER INIT (palette + lock badges + custom slides) ========== */
+  const addBtn=document.getElementById('addBtn');
+  const palette=document.getElementById('palette');
+  if(addBtn) addBtn.addEventListener('click',()=>{ if(editing && palette) palette.hidden=false; });
+  if(palette){
+    palette.querySelectorAll('.palette-item').forEach(b=>{
+      b.addEventListener('click',()=>{ palette.hidden=true; addCustomSlide(b.dataset.tpl); });
+    });
+    const pc=document.getElementById('paletteCancel'); if(pc) pc.addEventListener('click',()=>palette.hidden=true);
+    palette.addEventListener('click',e=>{ if(e.target===palette) palette.hidden=true; });
+  }
+  // AM mode: stamp a lock badge on every standard slide
+  if(amMode){
+    deck.querySelectorAll('.slide:not([data-custom])').forEach(s=>{
+      if(!s.querySelector(':scope > .lock-badge')){
+        const lb=document.createElement('div'); lb.className='lock-badge'; lb.textContent='🔒 표준 장표 — 수정 불가';
+        s.appendChild(lb);
+      }
+    });
+  }
+  // enhance custom slides already baked into the deck, then restore scratch (unsaved) ones
+  deck.querySelectorAll('.slide[data-custom]').forEach(enhanceCustomSlide);
+  restoreCustom();
+  rebuildHud();
 })();
 
 /* ====== Counter animation on KPI numbers ====== */
