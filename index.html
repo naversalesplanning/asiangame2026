@@ -743,6 +743,15 @@ body.editing .insert-zone:hover{opacity:1}
 .iz-btn{flex:0 0 auto;margin:0 12px;background:#d5b200;color:#1a1410;border:none;border-radius:99px;padding:6px 16px;font-size:12.5px;font-weight:800;letter-spacing:.02em;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.32);white-space:nowrap}
 .iz-btn:hover{background:#FFEC8D}
 
+/* editable price table: row delete (✕) + add-row button (edit mode, custom slides only) */
+.rowdel{display:none}
+body.editing .slide[data-custom] .rowdel{display:inline-flex;position:absolute;right:2px;top:50%;transform:translateY(-50%);width:16px;height:16px;align-items:center;justify-content:center;border:none;border-radius:50%;background:#d2372f;color:#fff;font-size:9px;line-height:1;cursor:pointer;z-index:6;padding:0}
+.rowdel:hover{background:#a01b15}
+.addrow-btn{display:none}
+body.editing .slide[data-custom] .addrow-btn{display:inline-block;margin-top:8px;background:rgba(213,178,0,.16);border:1px dashed rgba(213,178,0,.6);color:#d5b200;border-radius:8px;padding:4px 12px;font-size:11px;font-weight:800;cursor:pointer}
+body.editing .slide[data-custom] .addrow-btn:hover{background:rgba(213,178,0,.28)}
+.tbl td.auto{color:#d5b200;font-weight:800}
+
 /* AM mode: hard-lock standard slides */
 .lock-badge{display:none}
 body.am-mode.editing .slide:not([data-custom]) .lock-badge{display:flex;align-items:center;gap:7px;position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:45;background:rgba(0,0,0,.72);color:#bdb6ad;font-size:12px;font-weight:800;letter-spacing:.02em;padding:6px 14px;border-radius:99px;backdrop-filter:blur(8px);white-space:nowrap}
@@ -1263,6 +1272,7 @@ document.addEventListener('keydown',e=>{
     slide.dataset.custom='1';
     slide.querySelectorAll('*').forEach(el=>{ if(isTextLeaf(el) && !el.dataset.eid) wireTextLeaf(el); });
     slide.querySelectorAll('img.mock-img, img.aichi-logo, img.aichi-img').forEach(wireImage);
+    slide.querySelectorAll('table.tbl').forEach(wireTable);   // editable price table (add/delete rows + auto TOTAL)
     if(!slide.querySelector(':scope > .slide-ctrls')){
       const c=document.createElement('div'); c.className='slide-ctrls';
       c.innerHTML='<button class="sc-up" type="button" title="위로">↑</button><button class="sc-down" type="button" title="아래로">↓</button><button class="sc-del" type="button" title="삭제">🗑</button>';
@@ -1315,8 +1325,56 @@ document.addEventListener('keydown',e=>{
     slides.forEach(s=>deck.insertBefore(mkZone(s), s));   // a zone before each slide
     deck.appendChild(mkZone(null));                        // and one at the very end
   }
+  /* ---- editable price table (inline row add/delete + auto TOTAL) ---- */
+  function parseNum(s){ const n=parseInt(String(s).replace(/[^\d]/g,''),10); return isNaN(n)?0:n; }
+  function recomputeTotal(table){
+    const sumRow=table.querySelector('tr.sum'); if(!sumRow) return;
+    let sUnit=0, sImp=0;
+    table.querySelectorAll('tbody tr').forEach(tr=>{
+      if(tr.classList.contains('sum')||tr.classList.contains('price')) return;
+      const td=tr.querySelectorAll('td');
+      if(td.length>=5){ sUnit+=parseNum(td[3].textContent); sImp+=parseNum(td[4].textContent); }
+    });
+    const st=sumRow.querySelectorAll('td'); // [TOTAL(colspan2)][구좌][단가][노출수]
+    if(st.length>=4){ st[2].textContent=sUnit?sUnit.toLocaleString('en'):'—'; st[3].textContent=sImp?sImp.toLocaleString('en'):'—'; }
+  }
+  function addRowDel(tr,table){
+    const last=tr.lastElementChild; if(!last||last.querySelector('.rowdel')) return;
+    last.style.position='relative';
+    const b=document.createElement('button'); b.type='button'; b.className='rowdel'; b.textContent='✕'; b.title='행 삭제';
+    b.addEventListener('click',ev=>{ ev.stopPropagation(); tr.remove(); recomputeTotal(table); scheduleCustomSave(); });
+    last.appendChild(b);
+  }
+  function addRow(table){
+    const tb=table.querySelector('tbody'); if(!tb) return;
+    const sumRow=table.querySelector('tr.sum');
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>영역</td><td>지면</td><td>1</td><td>—</td><td>—</td>';
+    tb.insertBefore(tr, sumRow||null);
+    tr.querySelectorAll('td').forEach(td=>{ if(isTextLeaf(td)) wireTextLeaf(td); });
+    if(editing) tr.querySelectorAll('[data-eid]').forEach(td=>td.setAttribute('contenteditable','true'));
+    addRowDel(tr,table);
+    recomputeTotal(table); scheduleCustomSave();
+  }
+  function wireTable(table){
+    if(table.dataset.wired) return; table.dataset.wired='1';
+    // TOTAL 단가/노출수 cells are auto-computed → not directly editable
+    const sumRow=table.querySelector('tr.sum');
+    if(sumRow){ const t=sumRow.querySelectorAll('td'); [t[2],t[3]].forEach(td=>{ if(td){ td.removeAttribute('data-eid'); td.classList.add('auto'); } }); }
+    table.addEventListener('input',()=>recomputeTotal(table)); // live re-sum on any cell edit
+    table.querySelectorAll('tbody tr').forEach(tr=>{ if(!tr.classList.contains('sum')&&!tr.classList.contains('price')) addRowDel(tr,table); });
+    if(!(table.nextElementSibling&&table.nextElementSibling.classList.contains('addrow-btn'))){
+      const btn=document.createElement('button'); btn.type='button'; btn.className='addrow-btn'; btn.textContent='＋ 행 추가';
+      btn.addEventListener('click',ev=>{ ev.stopPropagation(); addRow(table); });
+      table.insertAdjacentElement('afterend', btn);
+    }
+    recomputeTotal(table);
+  }
+
   function cleanCustomClone(slide){
     const c=slide.cloneNode(true);
+    c.querySelectorAll('.rowdel,.addrow-btn').forEach(e=>e.remove());
+    c.querySelectorAll('[data-wired]').forEach(e=>e.removeAttribute('data-wired'));
     c.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('contenteditable'));
     c.querySelectorAll('[data-eid]').forEach(e=>e.removeAttribute('data-eid'));
     c.querySelectorAll('[data-ieid]').forEach(e=>e.removeAttribute('data-ieid'));
@@ -1416,7 +1474,8 @@ document.addEventListener('keydown',e=>{
       deckClone.querySelectorAll('[data-eid]').forEach(e=>e.removeAttribute('data-eid'));
       deckClone.querySelectorAll('[data-ieid]').forEach(e=>e.removeAttribute('data-ieid'));
       deckClone.querySelectorAll('[data-scratch]').forEach(e=>e.removeAttribute('data-scratch'));
-      deckClone.querySelectorAll('.slide-ctrls,.lock-badge,.insert-zone').forEach(e=>e.remove());
+      deckClone.querySelectorAll('[data-wired]').forEach(e=>e.removeAttribute('data-wired'));
+      deckClone.querySelectorAll('.slide-ctrls,.lock-badge,.insert-zone,.rowdel,.addrow-btn').forEach(e=>e.remove());
       deckClone.querySelectorAll('.img-editable').forEach(e=>e.classList.remove('img-editable'));
       const deckHTML=deckClone.innerHTML;
       // 2) 암호화 (텍스트 + 교체 이미지 data URL까지 ciphertext 안으로)
