@@ -1,0 +1,265 @@
+# 2026 아이치-나고야 아시안게임 세일즈덱 · 작업 내역
+
+> 이 문서는 Claude와의 대화로 진행된 모든 주요 변경/결정 사항을 정리한 워크로그입니다.
+> 마지막 업데이트: 2026-06-08
+
+---
+
+## 🎯 프로젝트 개요
+
+- **목표**: 2026 아이치-나고야 아시안게임 NAVER 광고 패키지 세일즈덱 제작 (HTML 단일 파일)
+- **베이스**: `/Users/user/Documents/SalesDeck_WORLDCUP/(공통)NAVER_2026월드컵_프리미엄패키지.pptx` 구성을 참고
+- **데이터**: `/Users/user/Documents/salesdeck_asiangame/` 의 4개 항저우 아시안게임 PDF + 항저우 검색 지식베이스 PDF
+- **배포**: GitHub Pages (https://naversalesplanning.github.io/asiangame2026/)
+- **보안**: 비밀번호 `nasiangame2026` (sessionStorage 기반)
+
+---
+
+## 📁 파일 구조
+
+```
+/Users/user/Documents/salesdeck_asiangame/
+├── index.html                                    # 메인 파일 (GitHub Pages 진입점)
+├── 2026_AsianGames_AichiNagoya_NaverPremium.html # 로컬 백업 (.gitignore)
+├── README.md
+├── .gitignore                                    # PDF/PPTX 제외
+├── claude.md                                     # ← 이 파일
+├── images/                                       # 이미지 플레이스홀더 폴더
+│   ├── .gitkeep
+│   ├── cover-emblem.png                          # (직접 추가 필요)
+│   ├── slide07-feature-mobile.png · slide07-feature-pc.png
+│   ├── slide07-chzzk-pc.png · slide07-chzzk-mobile.png
+│   ├── slide09-special-template.png
+│   ├── slide10-story-1.png · slide10-story-main.png · slide10-story-3.png
+│   ├── slide11-pc-sideskin.png · slide11-mo-banner.png
+│   └── slide14-pc.png · slide14-phone.png
+└── (PDFs — git에 안 올라감, 로컬 confidential)
+    ├── (NAVER)항저우 아시안게임 광고 상품 소개서_농구배구.pdf
+    ├── (NAVER)항저우 아시안게임 광고 상품 소개서_아시안게임.pdf
+    ├── (NAVER)항저우 아시안게임 광고 상품 소개서_야구독점.pdf
+    ├── (NAVER)항저우 아시안게임 광고 상품 소개서_축구독점.pdf
+    └── 항저우아시안게임 지식베이스 검색 지표_20231010.pdf
+```
+
+---
+
+## 🗂 슬라이드 구성 (총 18장)
+
+| # | 슬라이드 | 비고 |
+|---|---|---|
+| 01 | 표지 | Aichi-Nagoya 로고 placeholder + 20th Asian Games / Aichi-Nagoya 2026 |
+| 02 | 대회 · 광고 정보 | 좌측 일정/정보, 우측 트래픽 KPI 4종 |
+| 03 | Why Naver | "아시안 게임의 모든 순간, NAVER에서 만나는, IMAGINE ONE ASIA" 3줄 + 박싱 4 reasons |
+| 04 | 광고 기회의 가치 | SCALE/STARS/TIME/GOAL 4 카드 (큰 박스 뱃지 제거됨) |
+| 05 | 한국 대표팀 일정 | 9개 이벤트: 개막·양궁·사격·펜싱·축구한일전·태권도·e스포츠·야구·폐막 |
+| 06 | 항저우 실 KPI 9-grid | 1.77억 QC / 신유빈 191만 / 페이커 46만 등 PDF 8/9 직접 인용 |
+| 07 | NAVER × 아시안게임 시너지 | 특집페이지 + 치지직 모형 (이미지 placeholder) |
+| **08** | **DIVIDER · CHAPTER 01 · 패키지 구성** | (재배치 후 패키지가 먼저) |
+| 09 | 5-tier 패키지 그리드 | GOLD/SILVER/BRONZE/FINALIST/OPENER · 메달 그라데이션 헤더 |
+| 10 | GOLD 패키지 상세 | 좌 다크 패널 + 우 디바이스 목업 + 4 카테고리 |
+| 11 | GOLD 단가표 | 13항목 + TOTAL + 판매가 |
+| 12 | 종목 독점 패키지 | 축구/야구/농구&배구 3 카드 |
+| **13** | **DIVIDER · APPENDIX · 상품 소개** | (Chapter 01 → APPENDIX로 변경) |
+| 14 | [메인] 스페셜 템플릿 | 모바일 폰 목업 |
+| 15 | [스포츠] 브랜드 트렌드 스토리 | 3 미니폰 목업 |
+| 16 | [스포츠] PC 사이드스킨 / MO 띠배너 | 랩탑 + 미니폰 |
+| 17 | 유의사항 | 8개 노트 카드 |
+| 18 | E.O.D. (감사합니다) | 월드컵 데크 포맷 — 빨강 배경 + NAVER + Aichi 로고 + 문의 DL |
+
+---
+
+## 🎨 디자인 결정
+
+### 컬러 팔레트 (2026 아이치-나고야 공식 사이트 CSS에서 직접 추출)
+| 변수 | 값 | 용도 |
+|---|---|---|
+| `--gold` | `#d5b200` | 시그니처 골드 (사이트 최다 사용 컬러) |
+| `--gold-bright` | `#FFEC8D` | 밝은 크림 옐로우 |
+| `--accent-red` | `#BF0D0D` | 딥 레드 |
+| `--green` (== red mapped) | `#d2372f` | 브랜드 레드 (강조 액션) |
+| `--purple` | `#4e3a93` | 멀티컬러 액센트 |
+| `--teal` | `#19aea9` · `#4cc0bc` | 멀티컬러 액센트 |
+| `--green-asia` | `#07993F` | 멀티컬러 액센트 |
+| `--orange` · `--coral` | `#e87e20` · `#FE6152` | 멀티컬러 액센트 |
+| `--ink` | `#322d2a` | 다크 웜 베이스 |
+
+### 폰트
+- **나눔스퀘어 네오** (NAVER 공식 한글 폰트)
+- CDN: `https://cdn.jsdelivr.net/gh/fonts-archive/NanumSquareNeo/NanumSquareNeo.css`
+- font-family: `'Nanum Square Neo'` (공백 포함!)
+- weights: 300/400/700/800/900
+- ⚠️ 잘못된 CDN URL 시행착오 4회: hangeul.pstatic.net, projectnoonnu, webfontworld 모두 404 → fonts-archive 검증으로 해결
+
+### NAVER 로고
+- 초록 NAVER: Wikipedia Commons SVG PNG (`upload.wikimedia.org/wikipedia/commons/thumb/2/23/Naver_Logotype.svg/3840px-Naver_Logotype.svg.png`)
+- 흰색 NAVER (s18 상단): freebiesupply PNG + `filter:brightness(0) invert(1)`
+- 위치: 표지 / s18만 노출 (`.slide .brand-mark{display:none}` 전역 + `#s18 .brand-mark{display:inline-flex}` 예외)
+
+---
+
+## 🛠 기술 결정
+
+### 컨테이너 쿼리
+- `.slide{container-type:inline-size;container-name:slide}`
+- 모든 슬라이드 내부 폰트사이즈를 `cqw` (1% of slide width)로 통일
+- 이유: 프리젠테이션 모드와 스크롤 모드에서 텍스트 비율 동일 유지
+
+### 프리젠테이션 모드
+- 좌하단 ▶ 프리젠테이션 버튼 또는 키보드 F
+- Fullscreen API + `body.presenting` 클래스 토글
+- 슬라이드 1600×900 고정 + flex 센터링 + `transform:scale(min(100vw/1600, 100vh/900))`
+- ESC로 종료, ←/→/Space로 이동, Home/End로 처음/끝
+- ⚠️ 시행착오: translate(-50%,-50%) scale로 했더니 % 계산 버그 / 100vw 100vh로 했더니 absolute 배치 레이아웃 깨짐 → 최종 16:9 strict + flex 센터링
+
+### 인쇄 / PDF
+- `@page{size:297mm 210mm;margin:0}` A4 가로 강제
+- `print-color-adjust:exact` 전역 적용 → 다크 배경/그라데이션/브랜드 컬러 모두 컬러 인쇄
+- PDF 버튼이 프리젠테이션 모드 자동 종료 후 호출 (18장 모두 포함)
+
+### 비밀번호 게이트
+- 클라이언트 사이드 검증 (강한 보안 X, 우발 노출 차단 용)
+- `sessionStorage.setItem('nag-auth','1')` 세션 단위 기억
+- 좌하단 🔒 버튼으로 즉시 재잠금
+
+### 인터랙티브 요소
+- 호버 효과: KPI 카드 떠오름, 패키지 카드 그림자 글로우
+- KPI 숫자 카운터 애니메이션 (IntersectionObserver 트리거)
+- 클릭 시 confetti burst (표지 타이틀 · 엠블럼 · s18)
+- 표지 엠블럼 마우스 패럴랙스 (rotateY/X)
+
+---
+
+## 📅 변경 이력 (대화 흐름 + Git 커밋)
+
+### Session 1 — 초기 생성 (2026-05-12)
+1. 사용자: "salesdeck_asiangame 폴더 파일들로 2026 아시안컵 데크 만들기, 월드컵 PPTX 형식 참고, HTML로"
+2. 처음엔 "AFC 아시안컵 사우디아라비아" 톤으로 만듦 (빨강+네이비 18 슬라이드)
+3. 사용자 정정: "2026 아이치-나고야 아시안게임 (Asian Games)이지 Asian Cup 아님"
+4. 컬러 팔레트 변경: 사용자가 제공한 `aichi-nagoya2026.org` 사이트의 CSS에서 컬러 직접 추출
+5. 항저우 PDF + 위키 (사내) 데이터 반영: 1.77억 QC, 신유빈 191만, 페이커 46만 등 PDF 직접 인용
+
+### Session 2 — OCA 엠블럼 + 인터랙티브
+6. 사용자가 OCA(Olympic Council of Asia) 태양 엠블럼 이미지 제공 → SVG로 재현 (욱일기 아님 명확화: 16개 광선이 뾰족+물결 화염 교차)
+7. Aichi-Nagoya 2026 공식 엠블럼 이미지 제공 → 3개 초승달 SVG로 재현
+8. 카운터 애니메이션 / 호버 효과 / confetti 추가
+9. 폰트 나눔스퀘어 네오 시도 (CDN URL 시행착오 끝에 fonts-archive로 확정)
+
+### Session 3 — 디테일 다듬기 (수십개 항목)
+10. 슬라이드 잘림 fix (s13 5-tier 카드, s14 GOLD 패널)
+11. 슬라이드 순서 재배치: 패키지 구성 → APPENDIX 상품 소개 (Chapter 1 → Appendix)
+12. 5p 한국 대표팀 일정을 9개 종목으로 대폭 확장 (양궁·사격·펜싱·태권도·e스포츠·야구 등)
+13. 4p 큰 박스 뱃지(45/⭐/⏰/▲) 제거 — AI 느낌 정리
+14. 빨간 라인 eyebrow 전역 숨김 (`.eyebrow{display:none}`)
+15. 표지: 위키 로고 → 이미지 placeholder (사용자가 직접 추가)
+16. NAVER 로고: 초록 = Wikipedia Commons / 흰색 = freebiesupply + filter
+17. 마지막 페이지 월드컵 데크 포맷으로: 빨강 배경 + NAVER + 아이치 로고 + "E.O.D." + 문의 DL
+
+### Session 4 — GitHub Pages 배포 (2026-05-13)
+18. `git init`, `.gitignore`, `README.md`, `index.html` (copy of main HTML), `images/.gitkeep`
+19. naversalesplanning/asiangame2026 리포 푸시 권한 부족 (403) → 사용자가 다른 GitHub 계정으로 `gh auth login` 후 재시도 성공
+20. GitHub Pages 활성화 (main 브랜치 root, HTTPS enforced)
+21. PPTX vs GitHub Pages 비교표 작성 → HTML 메일로 본인 발송 (`nworks mail send`)
+
+### Session 5 — 발표 모드 + 인쇄 최종 다듬기
+22. 프리젠테이션 모드 센터링 버그 (translate-50% 이슈) → flex 센터링으로 fix
+23. PDF 자동 가로 인쇄: `@page{size:297mm 210mm;margin:0}` + `print-color-adjust:exact`
+24. 프리젠테이션 viewport 채움 시도 → 챕터 디바이더 등 깨짐 → 16:9 strict 복귀 (디자인 무결성 우선)
+
+### Session 6 — 수정모드 + 원클릭 PDF 다운로드 (2026-06-08, 현재)
+25. **수정모드 추가**: 좌하단 툴바 `✏️ 수정` 버튼 + 단축키 `E` (게이트 해제 후 노출, 프리젠테이션 중 숨김)
+    - `body.editing` 토글 + 상단 노란 안내 배너
+    - 텍스트 편집: 문서 순서 기반 말단 텍스트 요소(자식요소 없음 또는 `<br>`만)에 `data-eid` 부여 → `contenteditable`. SVG/placeholder/버튼/입력 제외. 502개 요소 편집 가능
+    - 이미지 편집: `img.mock-img / .aichi-logo / .aichi-img` 부모를 `.img-editable` 핫스팟화 → 클릭 시 파일선택 → 교체. 14개 이미지
+26. **브라우저 저장**: 텍스트 → `localStorage["nag-edit-text-v1"]` (input 디바운스 400ms), 이미지 → **IndexedDB**(`nag-edits`/`img`, 용량 한계 회피). `↺ 초기화` 버튼으로 전체 원복(reload)
+    - ⚠️ 이 브라우저에만 저장 — GitHub Pages 배포본/타 기기 미반영 (사용자 선택)
+    - 텍스트 복원은 카운터 애니메이션 init보다 먼저 실행 → 수정한 숫자도 해당 값으로 카운트업
+27. **원클릭 PDF 다운로드**: 기존 인쇄(`window.print()`) 버튼 제거 → `⬇ PDF 다운로드`로 교체
+    - `html2canvas`+`jsPDF` CDN **지연 로드**, 18장 각 1600×900 렌더 → A4 가로 PDF(16:9 레터박스) → `2026_AsianGames_AichiNagoya_NaverPremium.pdf`
+    - 진행률 라벨("PDF 생성 중 5/18…"), 실패 시 `Cmd/Ctrl+P → PDF로 저장` 폴백 안내
+    - ⚠️ CORS: 외부 CDN 이미지가 차단되면 PDF에서 빈칸 가능
+28. 편집 중 방향키가 슬라이드 이동으로 새지 않도록 기존 키보드 핸들러에 `isContentEditable` 가드 추가, confetti 핸들러에 `!editing` 가드 추가
+29. 설계 문서: `docs/superpowers/specs/2026-06-08-edit-mode-and-pdf-design.md`
+30. 헤드리스 Chrome 검증: 런타임 에러 0 / 텍스트 502·이미지 14 인식 / 수정토글·localStorage 저장·E키 토글 정상
+
+### Session 6b — 수정모드 시크릿화 + 배포용 HTML 내보내기 (2026-06-08)
+31. **시크릿 진입**: 수정/내보내기/초기화 버튼을 평소엔 숨김(`#editBtn,#exportBtn,#resetBtn{display:none}`).
+    URL에 `?edit=nag-edit`(또는 `#nag-edit`)가 있을 때만 `body.edit-enabled` 부여 → 버튼 노출 + `E`키 단축키 활성화. (`const EDIT_KEY='nag-edit'`)
+    - 보통 사용자/광고주는 버튼 자체를 못 봄. 편집 권한자만 URL로 진입.
+32. **배포용 HTML 내보내기** (`💾 배포용 저장`, 수정모드일 때만 노출):
+    - 현재 DOM을 복제 → `contenteditable`/`editing`/`presenting`/`edit-enabled` 제거, 숨김 파일입력·지연로드 라이브러리 스크립트 제거 → `<!doctype>` 붙여 `index.html`로 다운로드
+    - 텍스트 편집 + 교체 이미지(data URL)가 **파일 안에 그대로 구워짐** → 이 파일을 git에 push하면 모두가 편집본을 봄
+    - ⚠️ 중요: 브라우저 저장(localStorage/IndexedDB)은 파일에 안 담김. **배포 반영하려면 반드시 `💾 배포용 저장`으로 받은 index.html을 push**해야 함
+33. 헤드리스 Chrome 검증: URL 키 없으면 버튼 숨김(display:none) / `?edit=nag-edit` 시 노출 / 내보낸 HTML에 편집 텍스트·이미지 bake 확인 / body 클래스·contenteditable 속성 제거 확인
+
+---
+
+## 📊 Git 커밋 히스토리
+
+| Commit | 메시지 | 날짜 |
+|---|---|---|
+| `1ad4ab4` | Initial deploy: 2026 Aichi-Nagoya Asian Games sales deck | 2026-05-13 |
+| `442364f` | Fix: presentation centering + auto landscape PDF | 2026-05-13 |
+| `a50734b` | Presentation full-viewport fill + A4 landscape color print | 2026-05-13 |
+| `c89a521` | Restore 16:9 strict in presentation mode | 2026-05-13 |
+
+---
+
+## 🔑 운영 가이드
+
+### 비밀번호
+- `nasiangame2026` (sessionStorage 단위로 기억)
+- 변경하려면: `index.html` 내 `const GATE_PW='nasiangame2026'` 수정 후 push
+
+### 이미지 추가
+- `images/` 폴더에 위 슬라이드 구성표의 파일명대로 PNG 저장 후 git push
+- 이미지 없으면 점선 placeholder가 자동 표시되며 파일 경로 안내
+
+### 발표 시 단축키
+- F → 프리젠테이션 시작
+- ESC → 종료
+- ←/→/Space/PageUp/PageDown → 슬라이드 이동
+- Home/End → 처음/끝
+- 좌하단 PDF 버튼 → A4 가로 컬러 인쇄/저장
+
+### 모니터 비율
+- 16:9 (1920×1080, 2560×1440, 외부 모니터/프로젝터 대부분): 화면 꽉 참
+- 16:10 (MacBook 1440×900 등): 상하에 얇은 letterbox
+- 4:3 (구형 프로젝터): 상하에 큰 letterbox
+
+---
+
+## ⚠️ 알려진 트레이드오프 / 향후 보완 가능
+
+1. **letterbox** — 16:9 외 모니터에서는 검은 여백 발생 (디자인 무결성 우선 선택). 향후 동적 비율 감지로 보완 가능.
+2. **비개발자 수정 접근성** — 텍스트 수정에도 HTML 편집 필요. 슬라이드 데이터를 별도 JSON으로 빼면 비개발자도 수정 가능.
+3. **광고주 신뢰성** — 도메인이 `*.github.io`라 광고주 인식 거부감 가능. CNAME으로 `*.navercorp.com` 서브도메인 연결 검토.
+4. **이미지 16개** — 모두 placeholder 상태. 실제 노출 화면 캡처/디자인 시안 필요.
+5. **PPTX 자동 변환** — GitHub Action으로 HTML→PPTX 파이프라인 구축 시 광고주 메일 첨부도 자동화 가능.
+
+---
+
+## 📧 본인에게 발송한 내부 메일
+
+- **일시**: 2026-05-13
+- **대상**: hyoju.cheong@navercorp.com (본인)
+- **제목**: `[배포] 2026 아이치-나고야 아시안게임 세일즈덱 — GitHub Pages 시범 운영 안내`
+- **내용**: 배포 URL · 사용법 · PPTX vs GitHub Pages 비교표 (11항목) · 하이브리드 운영안 (4 시나리오) · 보완 검토 사항 (4건)
+
+---
+
+## 🔗 참고 링크
+
+- 배포: https://naversalesplanning.github.io/asiangame2026/
+- 리포: https://github.com/naversalesplanning/asiangame2026
+- Wikipedia 공식 엠블럼: https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/2026_Asian_Games_logo.svg/250px-2026_Asian_Games_logo.svg.png
+- 아이치-나고야 2026 공식: https://www.aichi-nagoya2026.org/en/
+- 폰트 CDN: https://cdn.jsdelivr.net/gh/fonts-archive/NanumSquareNeo/NanumSquareNeo.css
+- NAVER 로고 CDN: https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Naver_Logotype.svg/3840px-Naver_Logotype.svg.png
+
+---
+
+## 🏷 라이선스 / 권리
+
+- NAVER Corp. — 광고 패키지 / 데이터 / NAVER 로고
+- 2026 Asian Games Aichi-Nagoya OCAA — 대회 정보 / 공식 엠블럼
+- 본 자료는 사내 영업 및 광고주 제안 목적이며, 외부 공유 시 사전 협의 필요

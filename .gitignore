@@ -1,0 +1,21 @@
+# Internal NAVER documents — DO NOT publish
+*.pdf
+*.pptx
+*.xlsx
+
+# macOS / editor noise
+.DS_Store
+.AppleDouble
+.LSOverride
+*~
+.idea/
+.vscode/
+
+# Temp / claude
+.claude/
+*.tmp
+*.bak
+
+# Original filename kept as local backup; index.html is the canonical published file
+2026_AsianGames_AichiNagoya_NaverPremium.html
+_plaintext_backup_index.html
