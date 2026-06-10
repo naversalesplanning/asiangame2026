@@ -1317,7 +1317,7 @@ document.addEventListener('keydown',e=>{
     const slides=[...deck.querySelectorAll('.slide')];
     const mkZone=(beforeEl)=>{
       const z=document.createElement('div'); z.className='insert-zone';
-      const btn=document.createElement('button'); btn.type='button'; btn.className='iz-btn'; btn.textContent='＋ 여기에 추가';
+      const btn=document.createElement('button'); btn.type='button'; btn.className='iz-btn'; btn.textContent='＋ 슬라이드 추가하기';
       btn.addEventListener('click',ev=>{ ev.stopPropagation(); pendingInsertBefore=beforeEl; if(palette) palette.hidden=false; });
       z.appendChild(btn);
       return z;
