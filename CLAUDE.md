@@ -206,6 +206,14 @@
 
 > ⚠️ 미결: 패키지 세트 템플릿에 상품 구성 항목명(트리플크라운 등)은 평문 유지 중(단가만 비움) — 항목명까지 비울지 미정. AM 배포 가이드 문서는 "수정 완료 후" 작성 예정.
 
+### Session 8 — 티어별 상세 슬라이드 4장 (2026-07-06)
+43. **패키지마다 "상세(상품 구성) + 단가표" 2장 세트로 통일**: GOLD만 상세(s14)+단가표(s15) 세트였고 나머지 4티어는 단가표만 있던 것을 수정. SILVER/BRONZE/FINALIST/OPENER 각 단가표 앞에 s14 스타일 상세 슬라이드 삽입(`id=s14-silver/-bronze/-finalist/-opener`, `class="slide s14 pk-*"`). 총 22→**26장**.
+    - 구성 카드(cats)는 각 단가표의 영역/지면 행을 그대로 인용(임의 추가 없음). 3영역 티어는 `style="grid-template-columns:repeat(3,1fr)"`.
+    - 목업 이미지 placeholder: `images/slide14-<tier>-pc.png` / `slide14-<tier>-phone.png` (8개, 직접 추가 필요)
+44. **fix: `.pk-* .name` 그라데이션 텍스트 버그** — `background:...!important` 쇼트핸드가 `background-clip:text`를 border-box로 리셋해 티어명이 그라데이션 바(bar)로 뭉개짐(기존 배포 단가표 4장도 동일 증상). → `background-image:...!important` + `background-clip:text!important`로 교정.
+45. PDF 내보내기 `solidFill`에 티어별 단색 추가(실버 #a9a9a9 / 브론즈 #b87333 / 퍼플 #6b6fae / 틸 #2fa8a3) — 기존엔 s14/s15 name이 전부 금색으로 강제됐음.
+46. 검증: 복호화 라운드트립 일치 / 오답 거부 / 단가 평문 누출 0(금액 패턴 히트는 전부 rgba 색상값) / 26장 렌더·순서 정확 / 신규 8장 1600×900 overflow 0 / 4장 스크린샷 시각 확인. 커밋 `fef590b` push 완료.
+
 ---
 
 ## 📊 Git 커밋 히스토리
