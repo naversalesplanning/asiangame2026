@@ -571,12 +571,13 @@ h3.kicker{font-size:clamp(20px,2.08cqw,30px);line-height:1.18;font-weight:800;le
 .s14 .left .pricebox .s{padding:.38cqw .63cqw;background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--mute-strong);font-size:.63cqw;border-radius:8px}
 .s14 .left .strap{margin-top:.38cqw;padding:.5cqw .63cqw;background:rgba(213,178,0,.15);border:1px solid rgba(213,178,0,.3);color:var(--gold-bright);font-size:.63cqw;font-weight:700;border-radius:8px;letter-spacing:.04em;text-align:center}
 .s14 .left .silhouette{position:absolute;right:-30px;bottom:0;width:80%;height:60%;background:radial-gradient(50% 50% at 50% 50%,rgba(232,196,106,.18) 0%,transparent 60%);filter:blur(20px)}
-.s14 .right{padding:3cqw 3cqw;display:flex;flex-direction:column;justify-content:space-between}
+.s14 .right{padding:3cqw 3cqw;display:flex;flex-direction:column;justify-content:space-between;min-height:0}
+.s14 .right > div:first-child{flex-shrink:0}
 .s14 .right h2{font-size:2cqw;font-weight:900;line-height:1.18;letter-spacing:-.012em}
 .s14 .right h2 em{font-style:normal;background:linear-gradient(120deg,var(--green) 0%,var(--gold) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .s14 .right .lead{margin-top:.5cqw;color:rgba(11,20,16,.62);font-size:1cqw}
-.s14 .right .devices{margin:1.5cqw 0;flex:1;display:flex;align-items:center;justify-content:center;gap:1.13cqw;position:relative}
-.s14 .right .lap{flex:1;max-width:58%;background:#0a1410;border-radius:8px 8px 3px 3px;padding:5px;border:1px solid rgba(11,20,16,.1);box-shadow:0 14px 30px -8px rgba(11,20,16,.18);position:relative}
+.s14 .right .devices{margin:1.25cqw 0;flex:1 1 auto;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:1.13cqw;position:relative}
+.s14 .right .lap{flex:0 1 36cqw;background:#0a1410;border-radius:8px 8px 3px 3px;padding:5px;border:1px solid rgba(11,20,16,.1);box-shadow:0 14px 30px -8px rgba(11,20,16,.18);position:relative}
 .s14 .right .lap .scr{aspect-ratio:16/10;background:#fff;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;padding:8px;gap:5px}
 .s14 .right .lap .scr .nb{height:8px;background:#eee;border-radius:2px}
 .s14 .right .lap .scr .top{display:grid;grid-template-columns:1fr .5fr;gap:5px;flex:1}
@@ -586,11 +587,11 @@ h3.kicker{font-size:clamp(20px,2.08cqw,30px);line-height:1.18;font-weight:800;le
 .s14 .right .lap .scr .bot{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;height:34%}
 .s14 .right .lap .scr .bot > div{background:#d0d6d4;border-radius:3px}
 .s14 .right .pho{max-width:30%;align-self:center}
-.s14 .right .pho .mp{width:11.25cqw;aspect-ratio:9/19;background:#0a1410;border-radius:18px;padding:5px;box-shadow:0 14px 30px -8px rgba(11,20,16,.25)}
+.s14 .right .pho .mp{width:10.5cqw;aspect-ratio:9/19;background:#0a1410;border-radius:18px;padding:5px;box-shadow:0 14px 30px -8px rgba(11,20,16,.25)}
 .s14 .right .pho .mp .scr{width:100%;height:100%;background:linear-gradient(180deg,var(--accent-red),#7a1e1e);border-radius:14px;position:relative;overflow:hidden}
 .s14 .right .pho .mp .scr::before{content:"메달 도전!\A대한민국";position:absolute;left:10px;top:14px;font-size:12px;color:#fff;font-weight:900;line-height:1.2;letter-spacing:-.01em;white-space:pre}
 .s14 .right .pho .mp .scr::after{content:"";position:absolute;bottom:14px;left:10px;right:10px;height:26px;background:rgba(0,0,0,.6);border-radius:6px}
-.s14 .right .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:.63cqw}
+.s14 .right .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:.63cqw;flex-shrink:0}
 .s14 .right .cat{padding:1.25cqw 1cqw;background:#fff;border:1px solid rgba(11,20,16,.08);border-radius:10px;text-align:center}
 .s14 .right .cat .h{font-size:.94cqw;font-weight:800;color:#fff;background:var(--green-darkest);padding:.5cqw 0;border-radius:6px;margin-bottom:.75cqw;letter-spacing:.04em}
 .s14 .right .cat .li{font-size:.84cqw;color:rgba(11,20,16,.7);padding:.31cqw 0;line-height:1.45}
