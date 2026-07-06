@@ -228,7 +228,8 @@
 50. s13 그리드 + 상세/단가표 10장 전부 재생성(총 26장 유지). id: `s14`/`s15`(GOLD), `s14-silver`~`s15-clip`. FINALIST/OPENER 폐기 → CSS `.pk-finalist/.pk-opener` → `.pk-video`(레드)/`.pk-clip`(퍼플)로 개명 — s13 그리드 4·5번 카드 색과 일치. 이미지 placeholder: `slide14-video/-clip-{pc,phone}.png`.
 51. 검증: 라운드트립/평문누출0/26장/overflow 0/TOTAL·판매가 5종 모두 엑셀 일치/스크린샷 4장 확인.
 52. 여백 정리(폰트/행높이 확대, `08de3d2`) → 좁은 창 잘림 발견 → s13/14/15 **px→cqw 전환**(`e11b497`) → 사파리 등에서 여전히 잘림 → **overflow-proof 구조**(`8a4de19`): `.devices{min-height:0;overflow:hidden}` + 카드 `flex-shrink:0` — 공간 부족 시 목업만 축소, 구성 카드는 절대 안 밀림. 폰트 25% 스트레스 테스트 통과.
-53. **📌 수정요청(annotation) 모드** (2026-07-06): `?edit=nag-edit` 툴바에 `📌 수정요청` 버튼. 켜면 장표 아무 요소나 클릭 → 메모 입력 → 번호 핀 표시. 우하단 패널에서 `📋 요청 복사` → 슬라이드 id·CSS 경로·eid·현재 텍스트·메모가 포함된 목록이 클립보드로 → Claude에게 붙여넣으면 정확한 위치 수정 가능. `nag-annot-v1` localStorage 저장(브라우저 단위), 핀/패널은 export·PDF에서 제거, 일반 URL에선 버튼 숨김. 수정모드와 상호배타(요청모드 켜면 편집 꺼짐).
+53. **1차 annotation 배치 반영** (`9170737`): 효주님이 📌 수정요청 모드로 보낸 14건 중 13건 반영(s3 한줄, s4 카드 위치, s5 타임라인 선 정렬, s6 숫자 확대, s13 박스 균일화+헤드 확대, s14 헤드라인·좌패널 확대, s15 서비스/판매가 단가열 정렬, s17 제목, s18 중앙정렬, s1 커버 엠블럼 삽입+placeholder 숨김). 미반영 1건: `#cs-17` 커스텀 장표 삭제 — 브라우저 localStorage에만 존재해 수정모드 🗑로 본인 삭제 필요. ⚠️ Pages deploy가 "Deployment failed, try again later"로 간헐 실패 — `gh api -X POST .../pages/builds`로 강제 리빌드하면 해결.
+54. **📌 수정요청(annotation) 모드** (2026-07-06): `?edit=nag-edit` 툴바에 `📌 수정요청` 버튼. 켜면 장표 아무 요소나 클릭 → 메모 입력 → 번호 핀 표시. 우하단 패널에서 `📋 요청 복사` → 슬라이드 id·CSS 경로·eid·현재 텍스트·메모가 포함된 목록이 클립보드로 → Claude에게 붙여넣으면 정확한 위치 수정 가능. `nag-annot-v1` localStorage 저장(브라우저 단위), 핀/패널은 export·PDF에서 제거, 일반 URL에선 버튼 숨김. 수정모드와 상호배타(요청모드 켜면 편집 꺼짐).
 
 ---
 
