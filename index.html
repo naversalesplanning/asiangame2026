@@ -703,6 +703,21 @@ h3.kicker{font-size:clamp(20px,2.08cqw,30px);line-height:1.18;font-weight:800;le
 body.edit-enabled #editBtn{display:inline-block}
 body.edit-enabled.editing #exportBtn,body.edit-enabled.editing #resetBtn{display:inline-block}
 body.presenting #editBtn,body.presenting #exportBtn,body.presenting #resetBtn{display:none !important}
+/* 📌 수정요청(annotation) 모드 */
+#annotBtn{display:none}
+body.edit-enabled #annotBtn{display:inline-block}
+body.presenting #annotBtn{display:none !important}
+#annotBtn.on{background:#d2372f;color:#fff;border-color:#d2372f}
+body.annotating .deck .slide *:hover{outline:2px dashed #d2372f;outline-offset:2px;cursor:crosshair}
+.annot-pin{position:absolute;z-index:60;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#d2372f;color:#fff;font-size:13px;font-weight:800;line-height:24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.45);pointer-events:none}
+body:not(.annotating) .annot-pin{display:none}
+.annot-panel{position:fixed;right:14px;bottom:64px;z-index:1000;background:rgba(20,16,12,.96);color:#f7f2e6;border:1px solid rgba(213,178,0,.45);border-radius:12px;padding:12px 14px;font-size:12px;max-width:360px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+body:not(.annotating) .annot-panel{display:none}
+.annot-panel .ap-list{max-height:180px;overflow:auto;margin:8px 0;display:flex;flex-direction:column;gap:4px}
+.annot-panel .ap-list .ap-item{padding:5px 8px;background:rgba(255,255,255,.06);border-radius:6px;line-height:1.35}
+.annot-panel .ap-btns{display:flex;gap:6px;margin-top:6px}
+.annot-panel .ap-btns button{flex:1;padding:7px 0;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#f7f2e6;font-weight:800;font-size:12px;cursor:pointer}
+.annot-panel .ap-btns .ap-copy{background:#d5b200;color:#1a1410;border-color:#d5b200}
 
 /* ---------- EDIT MODE ---------- */
 .edit-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:9997;background:linear-gradient(90deg,#d5b200,#a6783e);color:#1a1410;font-size:13px;font-weight:800;letter-spacing:.02em;padding:9px 16px;align-items:center;justify-content:center;gap:14px;box-shadow:0 4px 16px rgba(0,0,0,.28)}
@@ -888,6 +903,7 @@ body.presenting .present-counter{display:block}
   <button id="addBtn" title="슬라이드 추가">➕ 슬라이드 추가</button>
   <button id="exportBtn" title="편집 내용을 담은 배포용 index.html 다운로드">💾 배포용 저장</button>
   <button id="resetBtn" title="수정 내용 모두 초기화">↺ 초기화</button>
+  <button id="annotBtn" title="영역을 클릭해 Claude 수정요청 만들기">📌 수정요청</button>
   <button id="pdfBtn" title="PDF 파일로 다운로드">⬇ PDF 다운로드</button>
   <button id="lockBtn" title="다시 잠금">🔒</button>
 </div>
@@ -1468,6 +1484,78 @@ document.addEventListener('keydown',e=>{
     if(window.indexedDB) idbClear().then(done).catch(done); else done();
   });
 
+  /* ---- 📌 수정요청(annotation) 모드: 클릭한 요소에 메모 → Claude용 요청 목록 복사 ---- */
+  const ANNOT_KEY='nag-annot-v1';
+  const annotBtn=document.getElementById('annotBtn');
+  let annotating=false, annots=[];
+  try{ annots=JSON.parse(localStorage.getItem(ANNOT_KEY)||'[]'); if(!Array.isArray(annots)) annots=[]; }catch(e){ annots=[]; }
+  const annotSave=()=>{ try{ localStorage.setItem(ANNOT_KEY,JSON.stringify(annots)); }catch(e){} };
+  const annotPanel=document.createElement('div');
+  annotPanel.className='annot-panel';
+  annotPanel.innerHTML='<b>📌 수정요청</b> <span class="ap-cnt"></span><div class="ap-list"></div><div class="ap-btns"><button class="ap-copy">📋 요청 복사</button><button class="ap-clear">🗑 비우기</button></div><div style="opacity:.55;margin-top:6px">장표의 아무 영역이나 클릭 → 메모 입력. 복사해서 Claude에게 붙여넣으면 그 위치를 정확히 고칩니다.</div>';
+  document.body.appendChild(annotPanel);
+  function annotPath(el,root){
+    const parts=[];
+    while(el&&el!==root&&el.parentElement){
+      const p=el.parentElement, tag=el.tagName.toLowerCase();
+      const cls=(typeof el.className==='string'&&el.className.trim())?'.'+el.className.trim().split(/\s+/)[0]:'';
+      const sibs=[...p.children].filter(c=>c.tagName===el.tagName);
+      parts.unshift(sibs.length>1?tag+cls+':nth-of-type('+(sibs.indexOf(el)+1)+')':tag+cls);
+      el=p;
+    }
+    return parts.join(' > ');
+  }
+  function annotRender(){
+    document.querySelectorAll('.annot-pin').forEach(p=>p.remove());
+    annots.forEach((a,i)=>{
+      const slide=document.getElementById(a.slide); if(!slide) return;
+      const pin=document.createElement('div'); pin.className='annot-pin'; pin.textContent=i+1;
+      pin.style.left=a.x+'%'; pin.style.top=a.y+'%';
+      slide.appendChild(pin);
+    });
+    annotPanel.querySelector('.ap-cnt').textContent=annots.length+'건';
+    annotPanel.querySelector('.ap-list').innerHTML=annots.map((a,i)=>'<div class="ap-item"><b>'+(i+1)+'.</b> ['+a.slide+'] '+a.memo.replace(/</g,'&lt;').slice(0,48)+'</div>').join('')||'<div style="opacity:.5">아직 요청이 없습니다</div>';
+  }
+  function setAnnotating(on){
+    annotating=on;
+    document.body.classList.toggle('annotating',on);
+    annotBtn.classList.toggle('on',on);
+    annotBtn.textContent=on?'✓ 요청작성 종료':'📌 수정요청';
+    if(on&&editing) setEditing(false);
+    annotRender();
+  }
+  annotBtn.addEventListener('click',()=>setAnnotating(!annotating));
+  document.addEventListener('click',e=>{
+    if(!annotating) return;
+    const t=e.target;
+    if(t.closest('.toolbar')||t.closest('.annot-panel')||t.closest('.hud')) return;
+    const slide=t.closest('.slide'); if(!slide||!slide.id) return;
+    e.preventDefault(); e.stopPropagation();
+    const cur=(t.textContent||'').trim().replace(/\s+/g,' ').slice(0,60);
+    const memo=prompt('이 영역 수정요청 메모:'+(cur?'\n(선택: “'+cur+'”)':''));
+    if(!memo||!memo.trim()) return;
+    const sr=slide.getBoundingClientRect(), r=t.getBoundingClientRect();
+    annots.push({slide:slide.id, path:annotPath(t,slide), eid:t.getAttribute('data-eid')||null,
+      text:(t.textContent||'').trim().replace(/\s+/g,' ').slice(0,80), memo:memo.trim(),
+      x:+(((r.left+r.width/2-sr.left)/sr.width*100).toFixed(2)),
+      y:+(((r.top+r.height/2-sr.top)/sr.height*100).toFixed(2))});
+    annotSave(); annotRender();
+  },true);
+  annotPanel.querySelector('.ap-copy').addEventListener('click',()=>{
+    if(!annots.length){ alert('복사할 요청이 없습니다.'); return; }
+    const txt='[아시안게임 덱 수정요청 '+annots.length+'건]\n'+annots.map((a,i)=>
+      (i+1)+'. 슬라이드 #'+a.slide+' · 요소: '+a.path+(a.eid?' (eid:'+a.eid+')':'')+(a.text?' · 현재 텍스트: “'+a.text+'”':'')+'\n   → 요청: '+a.memo).join('\n');
+    const done=()=>{ alert('복사 완료! Claude에게 그대로 붙여넣으면 됩니다.'); };
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(()=>{ window.prompt('아래 내용을 직접 복사하세요:',txt); });
+    else window.prompt('아래 내용을 직접 복사하세요:',txt);
+  });
+  annotPanel.querySelector('.ap-clear').addEventListener('click',()=>{
+    if(!annots.length) return;
+    if(!confirm('수정요청 '+annots.length+'건을 모두 지울까요?')) return;
+    annots=[]; annotSave(); annotRender();
+  });
+  annotRender();
+
   /* ---- export a deployable, ENCRYPTED index.html with edits baked in ---- */
   async function exportHTML(){
     if(editing) setEditing(false); // strip contenteditable + editing class from live DOM first
@@ -1490,14 +1578,15 @@ document.addEventListener('keydown',e=>{
       deckClone.querySelectorAll('[data-ieid]').forEach(e=>e.removeAttribute('data-ieid'));
       deckClone.querySelectorAll('[data-scratch]').forEach(e=>e.removeAttribute('data-scratch'));
       deckClone.querySelectorAll('[data-wired]').forEach(e=>e.removeAttribute('data-wired'));
-      deckClone.querySelectorAll('.slide-ctrls,.lock-badge,.insert-zone,.rowdel,.addrow-btn').forEach(e=>e.remove());
+      deckClone.querySelectorAll('.slide-ctrls,.lock-badge,.insert-zone,.rowdel,.addrow-btn,.annot-pin').forEach(e=>e.remove());
       deckClone.querySelectorAll('.img-editable').forEach(e=>e.classList.remove('img-editable'));
       const deckHTML=deckClone.innerHTML;
       // 2) 암호화 (텍스트 + 교체 이미지 data URL까지 ciphertext 안으로)
       const enc=await encryptDeck(pw,deckHTML);
       // 3) 발행 문서 조립 — deck은 비우고 ENC 블록만 새 값으로 교체 (평문 절대 미포함)
       const clone=document.documentElement.cloneNode(true);
-      const b=clone.querySelector('body'); if(b) b.classList.remove('editing','presenting','edit-enabled');
+      const b=clone.querySelector('body'); if(b) b.classList.remove('editing','presenting','edit-enabled','annotating');
+      clone.querySelectorAll('.annot-panel,.annot-pin').forEach(e=>e.remove());
       clone.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('contenteditable'));
       const cd=clone.querySelector('.deck'); if(cd) cd.innerHTML='';
       clone.querySelectorAll('input[type="file"]').forEach(e=>e.remove());               // drop hidden picker
@@ -1549,6 +1638,7 @@ document.addEventListener('keydown',e=>{
           width:1600, height:900, windowWidth:1600,
           onclone:(doc)=>{
             doc.querySelectorAll('.slide').forEach(s=>{ s.style.borderRadius='0'; s.style.boxShadow='none'; });
+            doc.querySelectorAll('.annot-pin').forEach(e=>e.remove());
             // html2canvas can't render gradient text (background-clip:text) → force a solid fill so glyphs are visible
             const solidFill=(sel,color)=>doc.querySelectorAll(sel).forEach(e=>{
               e.style.background='none'; e.style.backgroundImage='none';

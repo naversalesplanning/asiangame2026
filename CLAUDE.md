@@ -227,6 +227,8 @@
     | CLIP | 클립(1초 범퍼)1·숏폼 1st 1 | 150M | 33.3% | 1억 | 3구좌 |
 50. s13 그리드 + 상세/단가표 10장 전부 재생성(총 26장 유지). id: `s14`/`s15`(GOLD), `s14-silver`~`s15-clip`. FINALIST/OPENER 폐기 → CSS `.pk-finalist/.pk-opener` → `.pk-video`(레드)/`.pk-clip`(퍼플)로 개명 — s13 그리드 4·5번 카드 색과 일치. 이미지 placeholder: `slide14-video/-clip-{pc,phone}.png`.
 51. 검증: 라운드트립/평문누출0/26장/overflow 0/TOTAL·판매가 5종 모두 엑셀 일치/스크린샷 4장 확인.
+52. 여백 정리(폰트/행높이 확대, `08de3d2`) → 좁은 창 잘림 발견 → s13/14/15 **px→cqw 전환**(`e11b497`) → 사파리 등에서 여전히 잘림 → **overflow-proof 구조**(`8a4de19`): `.devices{min-height:0;overflow:hidden}` + 카드 `flex-shrink:0` — 공간 부족 시 목업만 축소, 구성 카드는 절대 안 밀림. 폰트 25% 스트레스 테스트 통과.
+53. **📌 수정요청(annotation) 모드** (2026-07-06): `?edit=nag-edit` 툴바에 `📌 수정요청` 버튼. 켜면 장표 아무 요소나 클릭 → 메모 입력 → 번호 핀 표시. 우하단 패널에서 `📋 요청 복사` → 슬라이드 id·CSS 경로·eid·현재 텍스트·메모가 포함된 목록이 클립보드로 → Claude에게 붙여넣으면 정확한 위치 수정 가능. `nag-annot-v1` localStorage 저장(브라우저 단위), 핀/패널은 export·PDF에서 제거, 일반 URL에선 버튼 숨김. 수정모드와 상호배타(요청모드 켜면 편집 꺼짐).
 
 ---
 
