@@ -852,9 +852,8 @@ body.am-mode.editing .slide:not([data-custom]){filter:grayscale(.12) brightness(
 /* 슬라이드 내부 레이아웃 무결성 100% 유지. 16:9가 아닌 모니터에선 letterbox 발생 (의도된 동작) */
 body.presenting{overflow:hidden;background:#0a0a0a}
 body.presenting .deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:0;gap:0;margin:0;width:100vw;height:100vh}
-body.presenting .slide{display:none}
+body.presenting .slide:not(.active){display:none}
 body.presenting .slide.active{
-  display:block;
   position:relative;
   left:auto;top:auto;
   width:1600px;height:900px;
