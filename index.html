@@ -850,7 +850,8 @@ body.am-mode.editing .slide:not([data-custom]){filter:grayscale(.12) brightness(
 
 /* ============ PRESENTATION MODE — 16:9 strict + flex-centered + scale ============ */
 /* 슬라이드 내부 레이아웃 무결성 100% 유지. 16:9가 아닌 모니터에선 letterbox 발생 (의도된 동작) */
-body.presenting{overflow:hidden;background:#0a0a0a}
+body.presenting{overflow:hidden;background:#000}
+html:has(body.presenting){background:#000}
 body.presenting .deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:0;gap:0;margin:0;width:100vw;height:100vh}
 body.presenting .slide:not(.active){display:none}
 body.presenting .slide.active{
@@ -1124,22 +1125,30 @@ function enterPresent(){
     if(r.top<vh*.6 && r.bottom>vh*.4) inView=k;
   });
   showPresentSlide(inView);
-  document.documentElement.requestFullscreen().catch(()=>{});
+  const fsEl=document.documentElement;
+  try{
+    if(fsEl.requestFullscreen) fsEl.requestFullscreen().catch(()=>{});
+    else if(fsEl.webkitRequestFullscreen) fsEl.webkitRequestFullscreen();
+  }catch(e){}
   fsBtn.textContent='⤡ 종료 (ESC)';
 }
 function exitPresent(){
   document.body.classList.remove('presenting');
   document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));
-  if(document.fullscreenElement){document.exitFullscreen().catch(()=>{})}
+  try{
+    if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+    else if(document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }catch(e){}
   fsBtn.textContent='▶ 프리젠테이션';
 }
 fsBtn.addEventListener('click',()=>{
   if(document.body.classList.contains('presenting'))exitPresent();
   else enterPresent();
 });
-document.addEventListener('fullscreenchange',()=>{
-  if(!document.fullscreenElement && document.body.classList.contains('presenting'))exitPresent();
-});
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{
+  const fs=document.fullscreenElement||document.webkitFullscreenElement;
+  if(!fs && document.body.classList.contains('presenting'))exitPresent();
+}));
 document.getElementById('lockBtn').addEventListener('click',()=>{exitPresent();lockGate()});
 document.addEventListener('keydown',e=>{
   const ae=document.activeElement, tag=ae.tagName;
