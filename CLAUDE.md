@@ -254,6 +254,8 @@
 
 ### Session 10 — s16 문구 통일 + UTM 배포 링크 기록 (2026-07-16)
 66. **s16 종목 특화 좌측 pitch 문구 통일**: 좌측 pitch `축구, 야구 종목 조별리그 일정(대한민국 경기 시간)에 GOLD 패키지 구성을 집행하는 패키지입니다.` → 우측 lead와 동일한 `축구, 야구 종목 조별리그 일정에 GOLD 구성을 집행할 수 있는 패키지입니다.`로 교체(라운드트립 검증·재암호화·push·Pages 배포 반영 확인). 커밋 `40fb10f`.
+68. **PDF 자동생성 크래시 해결 — 로고 리포 내장**: 사내망에서 `⬇ PDF 다운로드`가 7/27에서 `createPattern ... 0 width/height`로 죽음. 원인 = 덱이 참조하던 **외부 이미지(위키미디어 NAVER 로고 ×16, freebiesupply 흑백 ×1, 아시안게임 로고 ×1)**를 html2canvas가 `useCORS:true`로 캔버스 캡처하려다 CORS/차단으로 0×0 → 크래시(화면 표시는 됨). 해결: 3종을 `images/logo-naver.png`·`logo-naver-bw.png`·`logo-asiangames.png`로 **로컬화(same-origin)** + 셸 게이트 로고도 교체 + export `html2canvas`에 `ignoreElements`(0×0 이미지 스킵) 가드 추가. 덱 재암호화·재배포. 커밋 `0c56c49`. 검증: 라이브 로고 3종 200 image/png·외부 이미지 호스트 0·평문 단가 누출 0·라운드트립 일치. (즉효 대안은 Ctrl+P→PDF로 저장, `@page` 16:9 인쇄CSS로 품질 동일.)
+
 67. **⚠️ 배포용 UTM 링크 2개 = 정본 기록**(그동안 미기록이라 분실 위험이었음): GA4 `G-E5DR61KNGK`. **① 내부(AM 공지/영업 메일링)** `?utm_source=am&utm_medium=internal&utm_campaign=asiangames2026` / **② 외부(NOSP 공지)** `?utm_source=nosp&utm_medium=notice&utm_campaign=asiangames2026` (베이스 URL = 배포 주소). 덱 GA 제외 로직 `/(nag-edit|nag-am)/i`는 두 링크에 오작동 안 함(검증 — `am`은 `nag-am`과 매칭 안 됨). GA4 구분: `획득 > 트래픽 획득`에서 **세션 소스**(am/nosp) 또는 **세션 매체**(internal/notice)로. campaign은 동일하니 소스/매체로 갈라야 함. `utm_medium=internal`은 기본 채널그룹 미인식이라 명시적 소스/매체 측정기준 사용. 표준보고서 24~48h 지연(즉시확인=실시간/DebugView). 내부망·애드블록으로 내부(am) 과소집계 가능.
 
 ---
