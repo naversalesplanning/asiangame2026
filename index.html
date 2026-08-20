@@ -85,9 +85,14 @@ body{overflow-x:hidden}
 .s-cat .main .guide{margin-top:.7cqw;margin-bottom:.3cqw;font-size:.94cqw;color:rgba(11,20,16,.6);line-height:1.55;display:flex;flex-wrap:wrap;gap:.2cqw .55cqw;align-items:baseline}
 .s-cat .main .guide .gl{font-weight:800;color:var(--accent-red)}
 .s-cat .main .guide a{color:#BF0D0D;font-weight:700;text-decoration:underline;text-underline-offset:2px}
-.apply-float{position:fixed;top:18px;right:22px;z-index:9998;display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:var(--accent-red);color:#fff;font-weight:800;font-size:15px;border-radius:99px;text-decoration:none;box-shadow:0 12px 28px -8px rgba(191,13,13,.6);letter-spacing:.01em;font-family:'Nanum Square Neo','Pretendard Variable',sans-serif}
+.apply-float-wrap{position:fixed;top:18px;right:22px;z-index:9998;display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.apply-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.94);color:#14201a;font-size:12px;font-weight:800;letter-spacing:-.01em;box-shadow:0 6px 18px -6px rgba(0,0,0,.35);font-family:'Nanum Square Neo','Pretendard Variable',sans-serif}
+.apply-badge i{width:7px;height:7px;border-radius:50%;background:#0ac54a;box-shadow:0 0 0 3px rgba(10,197,74,.22);animation:applypulse 1.9s ease-in-out infinite}
+@keyframes applypulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.86)}}
+.apply-cap{padding:4px 11px;border-radius:99px;background:rgba(10,14,12,.62);color:rgba(255,255,255,.9);font-size:11.5px;font-weight:700;letter-spacing:-.01em;backdrop-filter:blur(4px);font-family:'Nanum Square Neo','Pretendard Variable',sans-serif}
+.apply-float{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:var(--accent-red);color:#fff;font-weight:800;font-size:15px;border-radius:99px;text-decoration:none;box-shadow:0 12px 28px -8px rgba(191,13,13,.6);letter-spacing:.01em;font-family:'Nanum Square Neo','Pretendard Variable',sans-serif}
 .apply-float:hover{filter:brightness(1.08);transform:translateY(-1px)}
-body.presenting .apply-float{display:none}
+body.presenting .apply-float-wrap{display:none}
 .gate{position:fixed;inset:0;z-index:9999;background:radial-gradient(80% 100% at 50% 100%,rgba(210,55,47,.18) 0%,transparent 60%),linear-gradient(180deg,#1a1410 0%,#322d2a 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-family:"Pretendard Variable",Pretendard,system-ui,sans-serif}
 .gate.hidden{display:none}
 #lockBtn{display:none}
@@ -881,7 +886,7 @@ body.am-mode.editing .slide:not([data-custom]){filter:grayscale(.12) brightness(
   html,body{background:#fff;margin:0;padding:0;width:297mm;height:167.0625mm;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
   body{overflow:visible !important}
   .deck{gap:0;padding:0;margin:0;display:block;width:297mm}
-  .hud,.toolbar,.gate,.present-counter,.apply-float{display:none !important}
+  .hud,.toolbar,.gate,.present-counter,.apply-float,.apply-float-wrap{display:none !important}
   *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
   .slide{
     width:297mm !important;
@@ -942,7 +947,11 @@ body.presenting .present-counter{display:block}
 <body>
 
 <!-- ============ PASSWORD GATE ============ -->
-<a id="applyFloat" class="apply-float" href="https://naver.me/F6Qiewri" target="_blank" rel="noopener">패키지 신청하기 →</a>
+<div class="apply-float-wrap" id="applyFloatWrap">
+  <span class="apply-badge"><i></i>신청 접수 중</span>
+  <a id="applyFloat" class="apply-float" href="https://naver.me/F6Qiewri" target="_blank" rel="noopener">패키지 신청하기 →</a>
+  <span class="apply-cap">선착순, 9/4(금) 마감</span>
+</div>
 <div class="gate hidden" id="gate">
   <div class="gate-box">
     <div class="gate-naver"><img src="images/logo-naver.png" alt="NAVER" onerror="this.style.display='none'"/></div>
