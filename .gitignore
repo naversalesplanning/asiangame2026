@@ -25,3 +25,6 @@ _password_memo.md
 
 # 대외비 초안 (판매현황·재원·광고주명 포함 — 절대 배포/공개 금지)
 _draft_*.md
+
+# Playwright 검증 산출물 (스크린샷/로그)
+.playwright-mcp/
